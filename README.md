@@ -2,12 +2,12 @@
 **Yucca Smart Data Platform** è una piattaforma cloud aperta e precompetitiva della Regione Piemonte, realizzata dal CSI Piemonte con tecnologie open source.
 # Getting Started
 Il prodotto **Yucca Data Service** è composto dalle seguenti componenti:
-- [admin-api](admin-api) (API di amministrazione)
-- [admindb](admindb) (Script SQL per la gestione del database PostgreSQL)
-- [binary-api](binary-api) (API per la gestione dei file binari)
-- [data-api](data-api) (API per le interrogazioni sui dati)
-- [insertdata-api](insertdata-api) (API per l'inserimento dei dati in modalità real-time)
-- [metadata-api](metadata-api) (API per le ricerche indicizzate sui metadati)
+- [admin-api](https://github.com/yucca-sdp/yucca-dataservice/tree/master/admin-api) (API di amministrazione)
+- [admindb](https://github.com/yucca-sdp/yucca-dataservice/tree/master/admindb) (Script SQL per la gestione del database PostgreSQL)
+- [binary-api](https://github.com/yucca-sdp/yucca-dataservice/tree/master/binary-api) (API per la gestione dei file binari)
+- [data-api](https://github.com/yucca-sdp/yucca-dataservice/tree/master/data-api) (API per le interrogazioni sui dati)
+- [insertdata-api](https://github.com/yucca-sdp/yucca-dataservice/tree/master/insertdata-api) (API per l'inserimento dei dati in modalità real-time)
+- [metadata-api](https://github.com/yucca-sdp/yucca-dataservice/tree/master/metadata-api) (API per le ricerche indicizzate sui metadati)
 # Prerequisites
 I prerequisiti per l'installazione del prodotto sono i seguenti:
 ## Software
@@ -21,7 +21,7 @@ Si rimanda ai file README&#46;md delle singole componenti per i dettagli specifi
 Nei file README.md delle singole componenti verranno elencate le variabili per la loro configurazione.
 # Installing
 ## Istruzioni per la compilazione
-- Per effettuare con sucesso la compilazione del prodotto è necessario scaricare manualmente la libreria [ojdbc6.jar](https://download.oracle.com/otn/utilities_drivers/jdbc/11204/ojdbc6.jar) e copiarla nella directory [admin-api/lib](admin-api/lib).
+- Per effettuare con sucesso la compilazione del prodotto è necessario scaricare manualmente la libreria [ojdbc6.jar](https://download.oracle.com/otn/utilities_drivers/jdbc/11204/ojdbc6.jar) e copiarla nella directory [admin-api/lib](https://github.com/yucca-sdp/yucca-dataservice/tree/master/admin-api/lib).
 - Da riga di comando eseguire `mvn -Dmaven.test.skip=true -P dev clean package`
 - La compilazione genera le seguenti unità di installazione:
     - `admin-api/target/adminapi.war`
