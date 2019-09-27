@@ -1,11 +1,11 @@
 # Project Title
 **Yucca Smart Data Platform** è una piattaforma cloud aperta e precompetitiva della Regione Piemonte, realizzata dal CSI Piemonte con tecnologie open source.
 # Getting Started
-La componente **admindb** contiene gli script SQL per la gestione del database PostgreSQL del prodotto [Yucca Data Service](..).
+La componente **admindb** contiene gli script SQL per la gestione del database PostgreSQL del prodotto [Yucca Data Service](https://github.com/yucca-sdp/yucca-dataservice).
 # Prerequisites
-Si rimanda ai file [README.md](../README.md) del prodotto per i dettagli specifici.
+Si rimanda ai file [README.md](https://github.com/yucca-sdp/yucca-dataservice/blob/master/README.md) del prodotto per i dettagli specifici.
 # Installing
-Si rimanda ai file [README.md](../README.md) del prodotto per i dettagli specifici.
+Si rimanda ai file [README.md](https://github.com/yucca-sdp/yucca-dataservice/blob/master/README.md) del prodotto per i dettagli specifici.
 # Versioning
 Per la gestione del codice sorgente viene utilizzata la metodologia [Semantic Versioning](https://semver.org/).
 # Authors

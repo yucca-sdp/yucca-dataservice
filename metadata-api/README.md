@@ -1,9 +1,9 @@
 # Project Title
 **Yucca Smart Data Platform** è una piattaforma cloud aperta e precompetitiva della Regione Piemonte, realizzata dal CSI Piemonte con tecnologie open source.
 # Getting Started
-La componente **metadata-api** si occupa di esporre i servizi web per le ricerche indicizzate sui metadati del prodotto [Yucca Data Service](..).
+La componente **metadata-api** si occupa di esporre i servizi web per le ricerche indicizzate sui metadati del prodotto [Yucca Data Service](https://github.com/yucca-sdp/yucca-dataservice).
 # Prerequisites
-Si rimanda ai file [README.md](../README.md) del prodotto per i dettagli specifici.
+Si rimanda ai file [README.md](https://github.com/yucca-sdp/yucca-dataservice/blob/master/README.md) del prodotto per i dettagli specifici.
 # Configurations
 Nel codice sorgente sono stati inseriti dei segnaposto per identificare le variabili della configurazione appplicativa, ad esempio `@@variabile@@`: questa notazione consente di riconoscerle facilmente all'inderno del progetto.
 
@@ -30,7 +30,7 @@ La tabella seguente contiene l'elenco delle variabili della configurazione appli
 |[src/main/resources/dev/MetadataApiConfig.properties](src/main/resources/dev/MetadataApiConfig.properties#L16)|SEARCH_ENGINE_COLLECTION|domain_metasearch|
 |[src/main/resources/dev/MetadataApiSecret.properties](src/main/resources/dev/MetadataApiSecret.properties#L1)|OAUTH_PASSWORD||
 # Installing
-Si rimanda ai file [README.md](../README.md) del prodotto per i dettagli specifici.
+Si rimanda ai file [README.md](https://github.com/yucca-sdp/yucca-dataservice/blob/master/README.md) del prodotto per i dettagli specifici.
 # Versioning
 Per la gestione del codice sorgente viene utilizzata la metodologia [Semantic Versioning](https://semver.org/).
 # Authors
