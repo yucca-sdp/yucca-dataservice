@@ -1,6 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.csi.yucca.adminapi</groupId>
 	<artifactId>adminapi</artifactId>
@@ -8,15 +9,20 @@
 
 	<packaging>war</packaging>
 	<name>adminapi</name>
+	<scm>
+		<connection>scm:svn:svn://sdnet-build.sdp.csi.it/SdpPropFiles/trunk</connection>
+	</scm>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<org.springframework-version>4.3.0.RELEASE</org.springframework-version>
+		<!-- <org.springframework-version>3.1.1.RELEASE</org.springframework-version> -->
+
 		<jackson.version>2.7.5</jackson.version>
 		<log4j.version>1.2.17</log4j.version>
 		<java-version>1.7</java-version>
-	</properties>
 
+	</properties>
 	<build>
 		<plugins>
 			<plugin>
@@ -28,34 +34,72 @@
 					<target>${java-version}</target>
 				</configuration>
 			</plugin>
+			<!-- 
+			<plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-dependency-plugin</artifactId>
+		        <version>3.1.2</version>
+		        <executions>
+		          <execution>
+		            <id>copy</id>
+		            <phase>prepare-package</phase>
+		            <goals>
+		              <goal>copy</goal>
+		            </goals>
+		            <configuration>
+		              <artifactItems>
+		                <artifactItem>
+		                  <groupId>mysql</groupId>
+						  <artifactId>mysql-connector-java</artifactId>
+		                  <groupId>oracle</groupId>
+					      <artifactId>ojdbc6</artifactId>
+		                  <overWrite>false</overWrite>
+		                  <outputDirectory>${project.build.directory}/extLib</outputDirectory>
+		                </artifactItem>
+		              </artifactItems>
+		            </configuration>
+		          </execution>
+		        </executions>
+		      </plugin>
+		      -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.4</version>
 				<configuration>
-					<webResources>
-						<resource>
-							<directory>${project.basedir}/lib/classes12</directory>
-							<targetPath>extLib</targetPath>
-							<includes>
-								<include>**/*.zip</include>
-							</includes>
-						</resource>
-						<resource>
-							<directory>${project.basedir}/lib/ojdbc6</directory>
-							<targetPath>extLib</targetPath>
-							<includes>
-								<include>**/*.jar</include>
-							</includes>
-						</resource>
-						<resource>
-							<directory>${project.basedir}/lib/hive-jdbc</directory>
-							<targetPath>WEB-INF/lib</targetPath>
-							<includes>
-								<include>**/*.jar</include>
-							</includes>
-						</resource>
-					</webResources>
+						<webResources>
+							<!-- <resource>
+								<directory>${project.build.directory}/extLib</directory>
+								<targetPath>extLib</targetPath>
+								<includes>
+									<include>**/*.jar</include>
+									<include>**/*.zip</include>
+								</includes>
+							</resource>
+							-->
+							${project.build.directory}/
+							<resource>
+								<directory>${project.basedir}/lib/classes12</directory>
+								<targetPath>extLib</targetPath>
+								<includes>
+									<include>**/*.zip</include>
+								</includes>
+							</resource>
+							<resource>
+								<directory>${project.basedir}/lib/ojdbc6</directory>
+								<targetPath>extLib</targetPath>
+								<includes>
+									<include>**/*.jar</include>
+								</includes>
+							</resource>
+							<resource>
+								<directory>${project.basedir}/lib/hive-jdbc</directory>
+								<targetPath>WEB-INF/lib</targetPath>
+								<includes>
+									<include>**/*.jar</include>
+								</includes>
+							</resource>
+						</webResources>
 					<webXml>${webXmlPath}/web.xml</webXml>
 					<warName>${project.artifactId}</warName>
 				</configuration>
@@ -69,6 +113,7 @@
 						<suiteXmlFile>testng.xml</suiteXmlFile>
 					</suiteXmlFiles>
 					<skipTests>${skipTests}</skipTests>
+					
 				</configuration>
 			</plugin>
 			<plugin>
@@ -90,7 +135,9 @@
 			<url>http://repo.hortonworks.com/content/repositories/releases/</url>
 			<layout>default</layout>
 		</repository>
+		<!-- <repository> <id>local-workspace</id> </repository> -->
 	</repositories>
+
 
 	<dependencies>
 		<dependency>
@@ -98,6 +145,7 @@
 			<artifactId>json-simple</artifactId>
 			<version>1.1</version>
 		</dependency>
+
 		<dependency>
 			<groupId>net.sf.supercsv</groupId>
 			<artifactId>super-csv</artifactId>
@@ -120,7 +168,6 @@
 			<artifactId>mail</artifactId>
 			<version>1.4.7</version>
 		</dependency>
-
 		<!-- DIPENDENZE PER EMAIL SENDER END -->
 		<dependency>
 			<groupId>com.google.guava</groupId>
@@ -128,7 +175,7 @@
 			<version>19.0-rc2</version>
 		</dependency>
 
-		<!-- cache2k --> 
+		<!-- cache2k -->
 		<dependency>
 			<groupId>org.cache2k</groupId>
 			<artifactId>cache2k-api</artifactId>
@@ -141,6 +188,7 @@
 			<version>1.0.2.Final</version>
 			<scope>runtime</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>com.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
@@ -193,11 +241,14 @@
 			<artifactId>generex</artifactId>
 			<version>0.0.3</version>
 		</dependency>
+
+		<!--swagger -->
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>
 			<version>2.5.0</version>
 		</dependency>
+
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger-ui</artifactId>
@@ -277,6 +328,7 @@
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
 		</dependency>
+
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
@@ -303,6 +355,14 @@
 			<artifactId>httpmime</artifactId>
 			<version>4.5.2</version>
 		</dependency>
+		
+		<!-- 
+			<dependency>
+			    <groupId>oracle</groupId>
+			    <artifactId>ojdbc6</artifactId>
+			    <version>11.2.0.3</version>
+			</dependency>
+		 -->
 		<dependency>
 			<groupId>com.oracle</groupId>
 			<artifactId>ojdbc6</artifactId>
@@ -316,7 +376,14 @@
 			<version>1.2.1</version>
 			<scope>system</scope>
 			<systemPath>${project.basedir}/lib/hive-jdbc/hive-jdbc-1.2.1.jar</systemPath>
-		</dependency>
+		</dependency>		
+		<!-- 
+			 <dependency>
+			    <groupId>org.apache.hive</groupId>
+			    <artifactId>hive-jdbc</artifactId>
+			    <version>1.2.1</version>
+			</dependency>
+		 -->
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
@@ -327,8 +394,28 @@
 			<artifactId>jsch</artifactId>
 			<version>0.1.53</version>
 		</dependency>
-	</dependencies>
 
+
+		<!-- <dependency> -->
+		<!-- <groupId>junit</groupId> -->
+		<!-- <artifactId>junit</artifactId> -->
+		<!-- <version>4.11</version> -->
+		<!-- <scope>test</scope> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.mockito</groupId> -->
+		<!-- <artifactId>mockito-core</artifactId> -->
+		<!-- <version>1.9.5</version> -->
+		<!-- <scope>test</scope> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.springframework</groupId> -->
+		<!-- <artifactId>spring-test</artifactId> -->
+		<!-- <version>3.2.3.RELEASE</version> -->
+		<!-- <scope>test</scope> -->
+		<!-- </dependency> -->
+
+	</dependencies>
 	<profiles>
 		<profile>
 			<id>client</id>
@@ -350,7 +437,9 @@
 									<goal>jar</goal>
 								</goals>
 								<configuration>
-									<outputDirectory>target/client/</outputDirectory>									
+									<outputDirectory>target/client/</outputDirectory>
+								<!-- 	<file>target/client/${artifactId}-${version}-client.jar</file>-->
+									
 									<classifier>client</classifier>
 									<includes>
 										<include>**/adminapi/util/**/*</include>
@@ -393,7 +482,228 @@
 			</build>
 		</profile>
 		<profile>
-			<id>dev</id>
+			<id>pochdp</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+						<version>1.9.5</version>
+						<configuration>
+							<connectionType>connection</connectionType>
+						</configuration>
+						<executions>
+							<execution>
+								<id>1</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>checkout</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+				<resources>
+					<resource>
+						<directory>${project.build.directory}/checkout/adminapi/resources/pochdp</directory>
+					</resource>
+					<resource>
+						<directory>conf</directory>
+						<targetPath>.</targetPath>
+					</resource>
+				</resources>
+				<testResources>
+					<testResource>
+						<directory>${project.build.directory}/checkout/adminapi/test/pochdp</directory>
+					</testResource>
+				</testResources>
+			</build>
+			<properties>
+				<webXmlPath>${project.build.directory}/checkout/adminapi/resources/pochdp/</webXmlPath>
+			</properties>
+		</profile>
+		<profile>
+			<id>int</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+						<version>1.9.5</version>
+						<configuration>
+							<connectionType>connection</connectionType>
+						</configuration>
+						<executions>
+							<execution>
+								<id>1</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>checkout</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+				<resources>
+					<resource>
+						<directory>${project.build.directory}/checkout/adminapi/resources/int</directory>
+					</resource>
+					<resource>
+						<directory>conf</directory>
+						<targetPath>.</targetPath>
+					</resource>
+					<resource>
+						<directory>src/main/webapp/img/sdp</directory>
+						<targetPath>.</targetPath>
+					</resource>
+				</resources>
+				<testResources>
+					<testResource>
+						<directory>${project.build.directory}/checkout/adminapi/test/int</directory>
+					</testResource>
+				</testResources>
+			</build>
+			<properties>
+				<webXmlPath>${project.build.directory}/checkout/adminapi/resources/int/</webXmlPath>
+			</properties>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+						<version>1.9.5</version>
+						<configuration>
+							<connectionType>connection</connectionType>
+						</configuration>
+						<executions>
+							<execution>
+								<id>1</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>checkout</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+				<resources>
+					<resource>
+						<directory>${project.build.directory}/checkout/adminapi/resources/prod</directory>
+					</resource>
+					<resource>
+						<directory>conf</directory>
+						<targetPath>.</targetPath>
+					</resource>
+					<resource>
+						<directory>src/main/webapp/img/sdp</directory>
+						<targetPath>.</targetPath>
+					</resource>
+				</resources>
+				<testResources>
+					<testResource>
+						<directory>${project.build.directory}/checkout/adminapi/test/prod</directory>
+					</testResource>
+				</testResources>
+			</build>
+			<properties>
+				<webXmlPath>${project.build.directory}/checkout/adminapi/resources/prod/</webXmlPath>
+			</properties>
+		</profile>
+		<profile>
+			<id>nivola</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+						<version>1.9.5</version>
+						<configuration>
+							<connectionType>connection</connectionType>
+						</configuration>
+						<executions>
+							<execution>
+								<id>1</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>checkout</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+				<resources>
+					<resource>
+						<directory>${project.build.directory}/checkout/adminapi/resources/nivola</directory>
+					</resource>
+					<resource>
+						<directory>conf</directory>
+						<targetPath>.</targetPath>
+					</resource>
+					<resource>
+						<directory>src/main/webapp/img/nivola</directory>
+						<targetPath>.</targetPath>
+					</resource>
+				</resources>
+				<testResources>
+					<testResource>
+						<directory>${project.build.directory}/checkout/adminapi/test/nivola</directory>
+					</testResource>
+				</testResources>
+			</build>
+			<properties>
+				<webXmlPath>${project.build.directory}/checkout/adminapi/resources/nivola/</webXmlPath>
+			</properties>
+		</profile>
+		<profile>
+			<id>local2</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+						<version>1.9.5</version>
+						<configuration>
+							<connectionType>connection</connectionType>
+						</configuration>
+						<executions>
+							<execution>
+								<id>1</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>checkout</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+				<resources>
+					<resource>
+						<directory>${project.build.directory}/checkout/adminapi/resources/local</directory>
+					</resource>
+					<resource>
+						<directory>conf</directory>
+						<targetPath>.</targetPath>
+					</resource>
+					<resource>
+						<directory>src/main/webapp/img</directory>
+						<targetPath>.</targetPath>
+					</resource>
+				</resources>
+				<testResources>
+					<testResource>
+						<directory>${project.build.directory}/checkout/adminapi/test/local</directory>
+					</testResource>
+				</testResources>
+			</build>
+			<properties>
+				<webXmlPath>${project.build.directory}/checkout/adminapi/resources/local/</webXmlPath>
+			</properties>
+		</profile>
+		<profile>
+			<id>local</id>
 			<build>
 				<resources>
 					<resource>
@@ -408,11 +718,11 @@
 						<targetPath>.</targetPath>
 					</resource>
 				</resources>
+
 			</build>
 			<properties>
 				<webXmlPath>src/main/webapp/WEB-INF</webXmlPath>
 			</properties>
 		</profile>
 	</profiles>
-
 </project>

@@ -17,7 +17,7 @@
 		<version.slf4j>1.7.1</version.slf4j>
 		<version.olingo>2.0.0</version.olingo>
 	</properties>
-	
+
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<testSourceDirectory>test</testSourceDirectory>
@@ -37,10 +37,6 @@
 				<version>2.3</version>
 				<configuration>
 					<warSourceDirectory>WebContent</warSourceDirectory>
-					<!-- <outputDirectory>D:\jboss-eap-6.0\standalone\deployments</outputDirectory> -->
-					<!-- <outputDirectory>${project.build.directory}/${project.activeProfiles[0].id}</outputDirectory> -->
-
-					<!-- <warName>DataApi</warName> -->
 					<webXml>WebContent/WEB-INF/web.xml</webXml>
 				</configuration>
 			</plugin>
@@ -55,25 +51,20 @@
 		</plugins>
 	</build>
 
-	<!-- repository section were moved in parent-pom -->
-	
-	<!-- project dependencies  -->
 	<dependencies>
-	
-<!-- NECESSARIE PER CLIENT ADMIN BEGIN -->
+
+		<!-- NECESSARIE PER CLIENT ADMIN BEGIN -->
 		<!-- SPRING JMS DEPENDENCIES -->
 		<dependency>
-		    <groupId>org.springframework</groupId>
-		    <artifactId>spring-web</artifactId>
-		    <version>${org.springframework-version}</version>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>${org.springframework-version}</version>
 		</dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context-support</artifactId>
-            <version>${org.springframework-version}</version>
-        </dependency>
-        
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
@@ -112,76 +103,59 @@
 			<version>${org.springframework-version}</version>
 		</dependency>
 		<!-- PER MYBATIS END -->
-<!-- NECESSARIE PER CLIENT ADMIN END -->	
-	
-	
+		<!-- NECESSARIE PER CLIENT ADMIN END -->
+
 		<dependency>
 			<groupId>org.csi.yucca.adminapi</groupId>
 			<artifactId>adminapi-client</artifactId>
 			<version>1.1.0-001</version>			
 		</dependency>
 
-<!--  cache2k --> 
+		<!-- cache2k --> 
 		<dependency>
-		    <groupId>org.cache2k</groupId>
-		    <artifactId>cache2k-api</artifactId>
-		    <version>1.0.2.Final</version>
-		    <scope>provided</scope>
-		  </dependency>
-		  <dependency>
-		    <groupId>org.cache2k</groupId>
-		    <artifactId>cache2k-all</artifactId>
-		    <version>1.0.2.Final</version>
-		    <scope>runtime</scope>
-		  </dependency>
+			<groupId>org.cache2k</groupId>
+			<artifactId>cache2k-api</artifactId>
+			<version>1.0.2.Final</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.cache2k</groupId>
+			<artifactId>cache2k-all</artifactId>
+			<version>1.0.2.Final</version>
+			<scope>runtime</scope>
+		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>19.0-rc2</version>
 		</dependency>
-	<!-- 
-		<dependency>
-			<groupId>org.csi.yucca.adminapi</groupId>
-			<artifactId>adminapi</artifactId>
-			<classifier>client-</classifier>
-			<version>1.0.0-001</version>
-			<scope>compile</scope>
-		</dependency>
- 	-->		
-		
+
 		<dependency>
 			<groupId>org.apache.solr</groupId>
 			<artifactId>solr-solrj</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.phoenix</groupId>
 			<artifactId>phoenix-core</artifactId>
 		</dependency>
-		
 		<dependency>
 			<groupId>org.apache.hbase</groupId>
 			<artifactId>hbase-client</artifactId>
 		</dependency>
-		
 		<dependency>
 			<groupId>org.apache.hbase</groupId>
 			<artifactId>hbase-server</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.olingo</groupId>
 			<artifactId>olingo-odata2-core</artifactId>
 			<version>${version.olingo}</version>
 		</dependency>
-
-
 		<dependency>
 			<groupId>org.apache.olingo</groupId>
 			<artifactId>olingo-odata2-api</artifactId>
 			<version>${version.olingo}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
@@ -192,15 +166,13 @@
 			<artifactId>gson</artifactId>
 			<version>2.2.2</version>
 		</dependency>
-		
+
 		<!-- JEE deps -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
-	
-			
-		
+
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -232,20 +204,16 @@
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
 		</dependency>
-
-		
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>2.7.5</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20140107</version>
 		</dependency>
-
 
 		<dependency>
 			<groupId>org.csi.yucca.adminapi</groupId>
@@ -269,52 +237,9 @@
 			<version>3.0.0</version>
 			<scope>test</scope>
 		</dependency>
-
 	</dependencies>
+
 	<profiles>
-
-
-		<profile>
-			<id>integ1</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<build>
-				<resources>
-					<resource>
-						<directory>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/dataapi/resources/integ1</directory>
-					</resource>
-				</resources>
-			</build>
-		</profile>
-
-
-		<profile>
-			<id>local</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<build>
-				<resources>
-					<resource>
-						<directory>resources/local</directory>
-					</resource>
-				</resources>
-			</build>
-		</profile>
-		<profile>
-			<id>localprod</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<build>
-				<resources>
-					<resource>
-						<directory>resources/localprod</directory>
-					</resource>
-				</resources>
-			</build>
-		</profile>
 		<profile>
 			<id>dev</id>
 			<build>
@@ -325,320 +250,6 @@
 				</resources>
 			</build>
 		</profile>
-		<profile>
-			<id>test</id>
-			<build>
-				<resources>
-					<resource>
-						<directory>resources/test</directory>
-					</resource>
-				</resources>
-			</build>
-		</profile>
-		<profile>
-			<id>integ</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-scm-plugin</artifactId>
-						<version>1.9.5</version>
-						<configuration>
-							<connectionType>connection</connectionType>
-						</configuration>
-						<executions>
-							<execution>
-								<id>1</id>
-								<phase>validate</phase>
-								<goals>
-									<goal>checkout</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-				<resources>
-					<resource>
-						<directory>${project.build.directory}/checkout/dataapi/resources/integ</directory>
-					</resource>
-				</resources>
-				<testResources>
-					<testResource>
-						<directory>${project.build.directory}/checkout/dataapi/test/integ</directory>
-					</testResource>
-				</testResources>
-
-			</build>
-		</profile>
-		<profile>
-			<id>pochdp</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-scm-plugin</artifactId>
-						<version>1.9.5</version>
-						<configuration>
-							<connectionType>connection</connectionType>
-						</configuration>
-						<executions>
-							<execution>
-								<id>1</id>
-								<phase>validate</phase>
-								<goals>
-									<goal>checkout</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-				<resources>
-					<resource>
-						<directory>${project.build.directory}/checkout/dataapi/resources/pochdp</directory>
-					</resource>
-				</resources>
-				<testResources>
-					<testResource>
-						<directory>${project.build.directory}/checkout/dataapi/test/pochdp</directory>
-					</testResource>
-				</testResources>
-
-			</build>
-		</profile>
-		<profile>
-			<id>int</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-scm-plugin</artifactId>
-						<version>1.9.5</version>
-						<configuration>
-							<connectionType>connection</connectionType>
-						</configuration>
-						<executions>
-							<execution>
-								<id>1</id>
-								<phase>validate</phase>
-								<goals>
-									<goal>checkout</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-				<resources>
-					<resource>
-						<directory>${project.build.directory}/checkout/dataapi/resources/int</directory>
-					</resource>
-				</resources>
-				<testResources>
-					<testResource>
-						<directory>${project.build.directory}/checkout/dataapi/test/pochdp</directory>
-					</testResource>
-				</testResources>
-
-			</build>
-		</profile>
-		<profile>
-			<id>integsolrolddriver</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-scm-plugin</artifactId>
-						<version>1.9.5</version>
-						<configuration>
-							<connectionType>connection</connectionType>
-						</configuration>
-						<executions>
-							<execution>
-								<id>1</id>
-								<phase>validate</phase>
-								<goals>
-									<goal>checkout</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-				<resources>
-					<resource>
-						<directory>${project.build.directory}/checkout/dataapi/resources/integsolrolddriver</directory>
-					</resource>
-				</resources>
-				<testResources>
-					<testResource>
-						<directory>${project.build.directory}/checkout/dataapi/test/integsolrolddriver</directory>
-					</testResource>
-				</testResources>
-
-			</build>
-		</profile>
-		<profile>
-			<id>prodsolrolddriver</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-scm-plugin</artifactId>
-						<version>1.9.5</version>
-						<configuration>
-							<connectionType>connection</connectionType>
-						</configuration>
-						<executions>
-							<execution>
-								<id>1</id>
-								<phase>validate</phase>
-								<goals>
-									<goal>checkout</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-				<resources>
-					<resource>
-						<directory>${project.build.directory}/checkout/dataapi/resources/prodsolrolddriver</directory>
-					</resource>
-				</resources>
-				<testResources>
-					<testResource>
-						<directory>${project.build.directory}/checkout/dataapi/test/prodsolrolddriver</directory>
-					</testResource>
-				</testResources>
-
-			</build>
-		</profile>
-
-
-
-		<profile>
-			<id>integsolr</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-scm-plugin</artifactId>
-						<version>1.9.5</version>
-						<configuration>
-							<connectionType>connection</connectionType>
-						</configuration>
-						<executions>
-							<execution>
-								<id>1</id>
-								<phase>validate</phase>
-								<goals>
-									<goal>checkout</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-				<resources>
-					<resource>
-						<directory>${project.build.directory}/checkout/dataapi/resources/integsolr</directory>
-					</resource>
-				</resources>
-				<testResources>
-					<testResource>
-						<directory>${project.build.directory}/checkout/dataapi/test/integsolr</directory>
-					</testResource>
-				</testResources>
-
-			</build>
-		</profile>
-		<profile>
-			<id>prod</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-scm-plugin</artifactId>
-						<version>1.9.5</version>
-						<configuration>
-							<connectionType>connection</connectionType>
-						</configuration>
-						<executions>
-							<execution>
-								<id>1</id>
-								<phase>validate</phase>
-								<goals>
-									<goal>checkout</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-				<resources>
-					<resource>
-						<directory>${project.build.directory}/checkout/dataapi/resources/prod</directory>
-					</resource>
-				</resources>
-			</build>
-		</profile>
-		<profile>
-			<id>nivola</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-scm-plugin</artifactId>
-						<version>1.9.5</version>
-						<configuration>
-							<connectionType>connection</connectionType>
-						</configuration>
-						<executions>
-							<execution>
-								<id>1</id>
-								<phase>validate</phase>
-								<goals>
-									<goal>checkout</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-				<resources>
-					<resource>
-						<directory>${project.build.directory}/checkout/dataapi/resources/nivola</directory>
-					</resource>
-				</resources>
-			</build>
-		</profile>
-		<profile>
-			<id>prodsolr</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-scm-plugin</artifactId>
-						<version>1.9.5</version>
-						<configuration>
-							<connectionType>connection</connectionType>
-						</configuration>
-						<executions>
-							<execution>
-								<id>1</id>
-								<phase>validate</phase>
-								<goals>
-									<goal>checkout</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-				<resources>
-					<resource>
-						<directory>${project.build.directory}/checkout/dataapi/resources/prodsolr</directory>
-					</resource>
-				</resources>
-			</build>
-		</profile>
-
-
-
 	</profiles>
-
 
 </project>

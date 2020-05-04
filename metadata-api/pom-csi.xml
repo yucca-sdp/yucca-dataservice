@@ -1,18 +1,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+	
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.csi.yucca.dataservice</groupId>
 		<artifactId>dataservice-root-pom</artifactId>
 		<version>1.0.0-008</version>		
 	</parent>
-
+	
 	<groupId>org.csi.yucca.storage.metadataapi</groupId>
 	<artifactId>metadataapi</artifactId>
 	<version>2.1.0-001</version>
 	<packaging>war</packaging>
 	<name>metadataapi</name>
+	
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -21,7 +22,6 @@
 	</properties>
 	<build>
 		<plugins>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
@@ -54,6 +54,7 @@
 							<language>html2</language>
 							<output>${project.build.directory}/generated-sources/docs/api/v01</output>
 							<configOptions>
+								<!-- <sourceFolder>src/gen/html2/main</sourceFolder> -->
 							</configOptions>
 						</configuration>
 					</execution>
@@ -106,15 +107,19 @@
 			</plugin>
 		</plugins>
 	</build>
-
+		
 	<dependencies>
+		<!-- <dependency> <groupId>org.apache.jena</groupId> <artifactId>jena-core</artifactId> 
+			<version>2.13.0</version> </dependency> <dependency> <groupId>org.apache.jena</groupId> 
+			<artifactId>jena-arq</artifactId> <version>2.13.0</version> </dependency> -->
 		<dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>apache-jena-libs</artifactId>
 			<type>pom</type>
 			<version>2.13.0</version>
-		</dependency>
 
+		</dependency>
+		
 		<!--  JEE and resteasy deps -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -128,7 +133,6 @@
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-jaxrs</artifactId>
 		</dependency>
-
 		<!-- JAXB support -->
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
@@ -139,13 +143,14 @@
 			<artifactId>jaxrs-api</artifactId>
 		</dependency>
 
+		
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.3</version>
 			<scope>compile</scope>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
@@ -163,6 +168,9 @@
 			<artifactId>httpmime</artifactId>
 		</dependency>
 
+		<!-- <dependency> <groupId>org.twitter4j</groupId> <artifactId>twitter4j-core</artifactId> 
+			<version>[4.0,)</version> </dependency> -->
+
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
@@ -174,8 +182,8 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.4</version>
 		</dependency>
-
 		<!-- Test related deps -->
+		
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
@@ -195,22 +203,40 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/io.swagger/swagger-codegen-maven-plugin 
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-codegen-maven-plugin</artifactId>
+			<version>2.2.2</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jackson-databind</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.maven-replacer-plugin</groupId>
+			<artifactId>replacer</artifactId>
+			<version>1.5.3</version>
+		</dependency>
+		-->
 		<dependency>
 			<groupId>org.apache.solr</groupId>
 			<artifactId>solr-solrj</artifactId>
 		</dependency>
 	</dependencies>
-
 	<profiles>
 		<profile>
-			<id>dev</id>
+			<id>local</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<build>
 				<resources>
 					<resource>
-						<directory>src/main/resources/dev</directory>
+						<directory>src/main/resources/local</directory>
 					</resource>
 					<resource>
 						<directory>conf</directory>
@@ -219,11 +245,171 @@
 				</resources>
 			</build>
 			<properties>
-				<webXmlPath>src/main/resources/dev</webXmlPath>
+				<webXmlPath>src/main/resources/local</webXmlPath>
 				<swaggerCssPath>/metadataapi/style/swagger.css</swaggerCssPath>
 				<swaggerYaml>swagger</swaggerYaml>
 			</properties>
 		</profile>
-	</profiles>
-
+		<profile>
+			<id>int</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+						<version>1.9.5</version>
+						<configuration>
+							<connectionType>connection</connectionType>
+						</configuration>
+						<executions>
+							<execution>
+								<id>1</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>checkout</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+				<resources>
+					<resource>
+						<directory>${project.build.directory}/checkout/matadataapi/resources/int</directory>
+					</resource>
+					<resource>
+						<directory>conf/sdp</directory>
+						<targetPath>.</targetPath>
+					</resource>
+				</resources>
+				<testResources>
+					<testResource>
+						<directory>${project.build.directory}/checkout/matadataapi/test/integ</directory>
+					</testResource>
+				</testResources>
+			</build>
+			<properties>
+				<webXmlPath>${project.build.directory}/checkout/matadataapi/resources/int/</webXmlPath>
+				<swaggerCssPath>/metadataapi/style/swagger.css</swaggerCssPath>
+				<swaggerYaml>swagger</swaggerYaml>
+			</properties>
+		</profile>
+		<profile>
+			<id>pochdp</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+						<version>1.9.5</version>
+						<configuration>
+							<connectionType>connection</connectionType>
+						</configuration>
+						<executions>
+							<execution>
+								<id>1</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>checkout</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+				<resources>
+					<resource>
+						<directory>${project.build.directory}/checkout/matadataapi/resources/pochdp</directory>
+					</resource>
+					<resource>
+						<directory>conf</directory>
+						<targetPath>.</targetPath>
+					</resource>
+				</resources>
+				<testResources>
+					<testResource>
+						<directory>${project.build.directory}/checkout/matadataapi/test/pochdp</directory>
+					</testResource>
+				</testResources>
+			</build>
+			<properties>
+				<webXmlPath>${project.build.directory}/checkout/matadataapi/resources/pochdp/</webXmlPath>
+				<swaggerCssPath>/metadataapi/style/swagger.css</swaggerCssPath>
+				<swaggerYaml>swagger</swaggerYaml>
+			</properties>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+						<version>1.9.5</version>
+						<configuration>
+							<connectionType>connection</connectionType>
+						</configuration>
+						<executions>
+							<execution>
+								<id>1</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>checkout</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+				<resources>
+					<resource>
+						<directory>${project.build.directory}/checkout/matadataapi/resources/prod</directory>
+					</resource>
+					<resource>
+						<directory>conf/sdp</directory>
+						<targetPath>.</targetPath>
+					</resource>
+				</resources>
+			</build>
+			<properties>
+				<webXmlPath>${project.build.directory}/checkout/matadataapi/resources/prod/</webXmlPath>
+				<swaggerCssPath>/metadataapi/style/swagger.css</swaggerCssPath>
+				<swaggerYaml>swagger</swaggerYaml>
+			</properties>
+		</profile>
+		<profile>
+			<id>nivola</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+						<version>1.9.5</version>
+						<configuration>
+							<connectionType>connection</connectionType>
+						</configuration>
+						<executions>
+							<execution>
+								<id>1</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>checkout</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+				<resources>
+					<resource>
+						<directory>${project.build.directory}/checkout/matadataapi/resources/nivola</directory>
+					</resource>
+					<resource>
+						<directory>conf/nivola</directory>
+						<targetPath>.</targetPath>
+					</resource>
+				</resources>
+			</build>
+			<properties>
+				<webXmlPath>${project.build.directory}/checkout/matadataapi/resources/nivola/</webXmlPath>
+				<swaggerCssPath>/metadataapi/style/swaggerNivola.css</swaggerCssPath>
+				<swaggerYaml>swaggerNivola</swaggerYaml>
+			</properties>
+		</profile>	</profiles>
 </project>

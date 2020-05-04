@@ -10,32 +10,33 @@
 
 	<groupId>org.csi.yucca.dataservice.insertdataapi</groupId>
 	<artifactId>insertdataapi</artifactId>
+	<!-- <version>1.0.0-008</version> -->
 	<packaging>war</packaging>
 	<name>insertdataapi</name>
 	<properties>
 		<insertDataFile>InsertdataApiConfig2.properties</insertDataFile>
 	</properties>
-
-	<build>
+	
+ 	<build>
 		<plugins>
-			<plugin>
-				<groupId>com.coderplus.maven.plugins</groupId>
-				<artifactId>copy-rename-maven-plugin</artifactId>
-				<version>1.0</version>
-				<executions>
-					<execution>
-						<id>copy-file</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>rename</goal>
-						</goals>
-						<configuration>
-							<sourceFile>${project.build.directory}/classes/${insertDataFile}</sourceFile>
-							<destinationFile>${project.build.directory}/classes/InsertdataApiConfig.properties</destinationFile>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+			 <plugin>
+                <groupId>com.coderplus.maven.plugins</groupId>
+                <artifactId>copy-rename-maven-plugin</artifactId>
+                <version>1.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-file</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>rename</goal>
+                        </goals>
+                        <configuration>
+                            <sourceFile>${project.build.directory}/classes/${insertDataFile}</sourceFile>
+                            <destinationFile>${project.build.directory}/classes/InsertdataApiConfig.properties</destinationFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
@@ -68,31 +69,30 @@
 			<artifactId>adminapi-client</artifactId>
 			<version>1.1.0-001</version>			
 		</dependency>
-
-		<!--  cache2k --> 
+<!--  cache2k --> 
 		<dependency>
-			<groupId>org.cache2k</groupId>
-			<artifactId>cache2k-api</artifactId>
-			<version>1.0.2.Final</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.cache2k</groupId>
-			<artifactId>cache2k-all</artifactId>
-			<version>1.0.2.Final</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
+		    <groupId>org.cache2k</groupId>
+		    <artifactId>cache2k-api</artifactId>
+		    <version>1.0.2.Final</version>
+		    <scope>provided</scope>
+		  </dependency>
+		  <dependency>
+		    <groupId>org.cache2k</groupId>
+		    <artifactId>cache2k-all</artifactId>
+		    <version>1.0.2.Final</version>
+		    <scope>runtime</scope>
+		  </dependency>
+	<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>19.0-rc2</version>
 		</dependency>
-		<dependency>
+<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>2.7.5</version>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>org.apache.phoenix</groupId>
 			<artifactId>phoenix-core</artifactId>
@@ -108,31 +108,38 @@
 			<artifactId>hbase-server</artifactId>
 		</dependency>
 
+
+
 		<!-- JEE deps -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>javax.mail-api</artifactId>
 			<version>1.4.7</version>
 			<scope>provided</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
 		</dependency>
+
 
 		<!-- resteasy deps -->
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-jaxrs</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-jaxb-provider</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>jaxrs-api</artifactId>
@@ -144,18 +151,21 @@
 			<version>2.13.2</version>
 		</dependency>
 
+
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path</artifactId>
 			<version>0.9.0</version>
 		</dependency>
-
+		<!--  -->		
 		<dependency>
 			<groupId>net.minidev</groupId>
 			<artifactId>json-smart</artifactId>
 			<version>1.2</version>
 		</dependency>
-
+		
+		<!-- <dependency> <groupId>org.apache.phoenix</groupId> <artifactId>phoenix-server-client</artifactId> 
+			<version>4.4.0.2.4.2.0-258</version> </dependency> -->
 		<dependency>
 			<groupId>org.apache.solr</groupId>
 			<artifactId>solr-solrj</artifactId>
@@ -166,6 +176,7 @@
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
 		</dependency>
+
 
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -184,6 +195,14 @@
 			<artifactId>httpmime</artifactId>
 		</dependency>
 
+
+<!-- 
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-collections4</artifactId>
+			<version>4.1</version>
+		</dependency>
+-->
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-client</artifactId>
@@ -195,6 +214,7 @@
 			<artifactId>activemq-pool</artifactId>
 			<version>5.9.1</version>
 		</dependency>
+
 
 		<!-- Test scoped deps -->
 		<dependency>
@@ -234,29 +254,49 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- SPRING JMS DEPENDENCIES -->
+<!-- SPRING JMS DEPENDENCIES -->
+
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-			<version>${org.springframework-version}</version>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-web</artifactId>
+		    <version>${org.springframework-version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context-support</artifactId>
-			<version>${org.springframework-version}</version>
-		</dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+        
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 			<version>${org.springframework-version}</version>
 		</dependency>
-
+<!-- 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jms</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-spring</artifactId>
+			<version>5.13.3</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.1.7</version>
+		</dependency>
+ -->
 		<!-- CREATE STRING FROM REGEX -->
 		<dependency>
 			<groupId>com.github.mifmif</groupId>
 			<artifactId>generex</artifactId>
 			<version>0.0.3</version>
 		</dependency>
+
+
 
 		<!-- PER MYBATIS BEGIN -->
 		<dependency>
@@ -290,18 +330,18 @@
 			<version>${org.springframework-version}</version>
 		</dependency>
 		<!-- PER MYBATIS END -->
-	</dependencies>
 
+	</dependencies>
 	<profiles>
 		<profile>
-			<id>dev</id>
+			<id>local</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<build>
 				<resources>
 					<resource>
-						<directory>src/main/resources/dev</directory>
+						<directory>src/main/resources/local</directory>
 					</resource>
 					<resource>
 						<directory>conf</directory>
@@ -310,9 +350,112 @@
 				</resources>
 			</build>
 			<properties>
-				<webXmlPath>src/main/resources/dev</webXmlPath>
+				<webXmlPath>src/main/resources/local</webXmlPath>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>int</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+					</plugin>
+ 				</plugins>
+				<resources>
+					<resource>
+						<directory>${project.build.directory}/checkout/insertdataapi/resources/int</directory>
+					</resource>
+					<resource>
+						<directory>conf</directory>
+						<targetPath>.</targetPath>
+					</resource>
+				</resources>
+				<testResources>
+					<testResource>
+						<directory>${project.build.directory}/checkout/insertdataapi/test/int</directory>
+					</testResource>
+				</testResources>
+			</build>
+			<properties>
+				<webXmlPath>${project.build.directory}/checkout/insertdataapi/resources/int/</webXmlPath>
+			</properties>
+		</profile>
+		<profile>
+			<id>pochdp</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+					</plugin>
+				</plugins>
+				<resources>
+					<resource>
+						<directory>${project.build.directory}/checkout/insertdataapi/resources/pochdp</directory>
+					</resource>
+					<resource>
+						<directory>conf</directory>
+						<targetPath>.</targetPath>
+					</resource>
+				</resources>
+				<testResources>
+					<testResource>
+						<directory>${project.build.directory}/checkout/insertdataapi/test/pochdp</directory>
+					</testResource>
+				</testResources>
+			</build>
+			<properties>
+				<webXmlPath>${project.build.directory}/checkout/insertdataapi/resources/pochdp/</webXmlPath>
+			</properties>
+		</profile>
+		<profile>
+			<id>nivola</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+					</plugin>
+				</plugins>
+				<resources>
+					<resource>
+						<directory>${project.build.directory}/checkout/insertdataapi/resources/nivola</directory>
+					</resource>
+					<resource>
+						<directory>conf</directory>
+						<targetPath>.</targetPath>
+					</resource>
+				</resources>
+			</build>
+			<properties>
+				<webXmlPath>${project.build.directory}/checkout/insertdataapi/resources/nivola/</webXmlPath>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>prod</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+					</plugin>
+				</plugins>
+				<resources>
+					<resource>
+						<directory>${project.build.directory}/checkout/insertdataapi/resources/prod</directory>
+					</resource>
+					<resource>
+						<directory>conf</directory>
+						<targetPath>.</targetPath>
+					</resource>
+				</resources>
+			</build>
+			<properties>
+				<webXmlPath>${project.build.directory}/checkout/insertdataapi/resources/prod/</webXmlPath>
 			</properties>
 		</profile>
 	</profiles>
-
 </project>

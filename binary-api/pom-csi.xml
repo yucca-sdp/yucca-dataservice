@@ -9,9 +9,12 @@
 	</parent>
 	<groupId>org.csi.yucca.dataservice.binaryapi</groupId>	
 	<artifactId>binaryapi</artifactId>
+	<!-- stuck to old version ? -->	
 	<version>1.0.0-001</version>
-	<packaging>war</packaging>	
+	<packaging>war</packaging>
+		
 	<name>binaryapi</name>
+	
 
 	<build>
 		<plugins>
@@ -34,20 +37,23 @@
 			</plugin>
 		</plugins>
 	</build>
-
+	
 	<dependencies>
+		
+<!-- NECESSARIE PER CLIENT ADMIN BEGIN -->
+		<!-- SPRING JMS DEPENDENCIES -->
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-			<version>${org.springframework-version}</version>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-web</artifactId>
+		    <version>${org.springframework-version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context-support</artifactId>
-			<version>${org.springframework-version}</version>
-		</dependency>
-
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+        
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
@@ -86,38 +92,40 @@
 			<version>${org.springframework-version}</version>
 		</dependency>
 		<!-- PER MYBATIS END -->
+<!-- NECESSARIE PER CLIENT ADMIN END -->
 
-		<!-- NECESSARIE PER CLIENT ADMIN END -->
+		
 		<dependency>
 			<groupId>org.csi.yucca.adminapi</groupId>
 			<artifactId>adminapi-client</artifactId>
 			<version>1.1.0-001</version>			
 		</dependency>
-
-		<!-- cache2k --> 
+<!--  cache2k --> 
 		<dependency>
-			<groupId>org.cache2k</groupId>
-			<artifactId>cache2k-api</artifactId>
-			<version>1.0.2.Final</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.cache2k</groupId>
-			<artifactId>cache2k-all</artifactId>
-			<version>1.0.2.Final</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
+		    <groupId>org.cache2k</groupId>
+		    <artifactId>cache2k-api</artifactId>
+		    <version>1.0.2.Final</version>
+		    <scope>provided</scope>
+		  </dependency>
+		  <dependency>
+		    <groupId>org.cache2k</groupId>
+		    <artifactId>cache2k-all</artifactId>
+		    <version>1.0.2.Final</version>
+		    <scope>runtime</scope>
+		  </dependency>
+		
+				<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>19.0-rc2</version>
 		</dependency>
-
+		
 		<!-- JEE deps -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
+
 
 		<!-- RestEasy -->		
 		<dependency>
@@ -136,37 +144,49 @@
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
 		</dependency>
+				
+		<!-- Don't we should use the javax.ws.rs artifact ? -->
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>jsr311-api</artifactId>
 			<version>1.1.1</version>
 			<scope>provided</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-multipart-provider</artifactId>
 			<version>2.3.7.Final-redhat-2</version>
 		</dependency>
+		
+		
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.3.1</version>
 		</dependency>
-
+		
 		<!-- JAXB support -->
 		<dependency>
 			<groupId>net.sf.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
 			<version>2.3</version>
 		</dependency>
-
+		
 		<!-- https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-multipart-provider -->
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongo-java-driver</artifactId>
-			<version>2.13.2</version>
+			</dependency>
+		
+<!-- 		
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.16</version>
+			<scope>provided</scope>
 		</dependency>
-
+ -->		
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path</artifactId>
@@ -203,34 +223,41 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		
 		<dependency>
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.4</version>
 		</dependency>
-
+		
 		<!-- http components -->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
+<!-- 			<version>4.4.1</version> -->
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient-cache</artifactId>
+<!-- 			<version>4.4.1</version> -->
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcore</artifactId>
+			<!-- <version>4.4.1</version> -->
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpmime</artifactId>
+<!-- 			<version>4.4.1</version> -->
 		</dependency>
+
 
 		<!--  Test related deps -->
 		<dependency>
@@ -256,18 +283,18 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>2.7.5</version>
 		</dependency>
+		
 	</dependencies>
-
 	<profiles>
 		<profile>
-			<id>dev</id>
+			<id>local</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<build>
 				<resources>
 					<resource>
-						<directory>src/main/resources/dev</directory>
+						<directory>src/main/resources/local</directory>
 					</resource>
 					<resource>
 						<directory>conf</directory>
@@ -276,7 +303,104 @@
 				</resources>
 			</build>
 			<properties>
-				<webXmlPath>src/main/resources/dev</webXmlPath>
+				<webXmlPath>src/main/resources/local</webXmlPath>
+			</properties>
+		</profile>
+		<profile>
+			<id>int</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+					</plugin>
+				</plugins>
+				<resources>
+					<resource>
+						<directory>${project.build.directory}/checkout/binary-api/resources/int</directory>
+					</resource>
+					<resource>
+						<directory>conf</directory>
+						<targetPath>.</targetPath>
+					</resource>
+				</resources>
+				<testResources>
+					<testResource>
+						<directory>${project.build.directory}/checkout/binary-api/test/int</directory>
+					</testResource>
+				</testResources>
+			</build>
+			<properties>
+				<webXmlPath>${project.build.directory}/checkout/binary-api/resources/int/</webXmlPath>
+			</properties>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+					</plugin>
+				</plugins>
+				<resources>
+					<resource>
+						<directory>${project.build.directory}/checkout/binary-api/resources/prod</directory>
+					</resource>
+					<resource>
+						<directory>conf</directory>
+						<targetPath>.</targetPath>
+					</resource>
+				</resources>
+			</build>
+			<properties>
+				<webXmlPath>${project.build.directory}/checkout/binary-api/resources/prod/</webXmlPath>
+			</properties>
+		</profile>
+		<profile>
+			<id>nivola</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+					</plugin>
+				</plugins>
+				<resources>
+					<resource>
+						<directory>${project.build.directory}/checkout/binary-api/resources/nivola</directory>
+					</resource>
+					<resource>
+						<directory>conf</directory>
+						<targetPath>.</targetPath>
+					</resource>
+				</resources>
+			</build>
+			<properties>
+				<webXmlPath>${project.build.directory}/checkout/binary-api/resources/nivola/</webXmlPath>
+			</properties>
+		</profile>
+		<profile>
+			<id>pochdp</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+					</plugin>
+				</plugins>
+				<resources>
+					<resource>
+						<directory>${project.build.directory}/checkout/binary-api/resources/pochdp</directory>
+					</resource>
+					<resource>
+						<directory>conf</directory>
+						<targetPath>.</targetPath>
+					</resource>
+				</resources>
+			</build>
+			<properties>
+				<webXmlPath>${project.build.directory}/checkout/binary-api/resources/pochdp/</webXmlPath>
 			</properties>
 		</profile>
 	</profiles>
