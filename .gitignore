@@ -6,3 +6,4 @@ data-binary-api/BinaryApiESB/target/capp/pom.xml
 data-binary-api/BinaryApiESB/target/capp/artifacts/api/YuccaUploadFile/YuccaUploadFile.xml
 
 *.war
+/pom-csi.xml
