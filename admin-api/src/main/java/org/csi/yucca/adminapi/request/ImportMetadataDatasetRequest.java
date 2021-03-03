@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.request;
@@ -16,7 +16,10 @@ public class ImportMetadataDatasetRequest {
 	private String jdbcPassword;
 	private String domain;
 	private String subdomain;
-
+	
+	private String jdbcDbservice;
+	private String jdbcDbschema;
+	
 	
 	public ImportMetadataDatasetRequest() {
 		super();
@@ -84,6 +87,22 @@ public class ImportMetadataDatasetRequest {
 
 	public void setSubdomain(String subdomain) {
 		this.subdomain = subdomain;
+	}
+
+	public String getJdbcDbservice() {
+		return jdbcDbservice;
+	}
+
+	public void setJdbcDbservice(String jdbcDbservice) {
+		this.jdbcDbservice = jdbcDbservice;
+	}
+
+	public String getJdbcDbschema() {
+		return jdbcDbschema;
+	}
+
+	public void setJdbcDbschema(String jdbcDbschema) {
+		this.jdbcDbschema = jdbcDbschema;
 	}
 	
 	

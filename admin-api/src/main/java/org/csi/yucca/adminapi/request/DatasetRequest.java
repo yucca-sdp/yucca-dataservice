@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.request;
@@ -52,6 +52,7 @@ public class DatasetRequest implements IVisibility, IDataSourceRequest {
 	private String solrcollectionname; 
 	private String phoenixschemaname;
 	private List<PostDataSourceGroupRequest> groups;
+	private List<String> apiContexts;
 
 	public List<PostDataSourceGroupRequest> getGroups() {
 		return groups;
@@ -391,4 +392,15 @@ public class DatasetRequest implements IVisibility, IDataSourceRequest {
 		this.jdbcdbschema = jdbcdbschema;
 	}
 
+	public List<String> getApiContexts() {
+		return apiContexts;
+	}
+
+	public void setApiContexts(List<String> apiContexts) {
+		this.apiContexts = apiContexts;
+	}
+
+
+
+	
 }

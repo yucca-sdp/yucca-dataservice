@@ -26,6 +26,15 @@
 		<filter-name>SDPurlRewriteFilter</filter-name>
 		<url-pattern>/SmartDataOdataService.svc/*</url-pattern>
 	</filter-mapping>
+	<filter>
+		<filter-name>SDPurlRewriteRuparFilter</filter-name>
+		<filter-class>it.csi.smartdata.dataapi.servlet.SDPOdataRuparFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>SDPurlRewriteRuparFilter</filter-name>
+		<url-pattern>/SmartDataOdataRuparService.svc/*</url-pattern>
+	</filter-mapping>
 
 
 

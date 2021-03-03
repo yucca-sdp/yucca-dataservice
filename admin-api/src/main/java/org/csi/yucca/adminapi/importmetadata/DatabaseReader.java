@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.importmetadata;
@@ -26,6 +26,7 @@ import java.util.Properties;
 import javax.servlet.ServletContext;
 
 import org.apache.log4j.Logger;
+import org.csi.yucca.adminapi.mapper.DatasetMapper;
 import org.csi.yucca.adminapi.model.Component;
 import org.csi.yucca.adminapi.model.ComponentJson;
 import org.csi.yucca.adminapi.model.DataType;
@@ -50,6 +51,7 @@ public class DatabaseReader {
 	private String dbSchema;
 	private String domain;
 	private String subdomain;
+	private String serviceName;
 
 	private List<DettaglioDataset> existingMedatataList;
 	private DatabaseConfiguration databaseConfiguation;
@@ -66,33 +68,43 @@ public class DatabaseReader {
 
 	private ServletContext servletContext;
 	private boolean importFromBackoffice;
+	DatasetMapper datasetMapper;
 
-	public DatabaseReader(ServletContext servletContext, String organizationCode, String tenantCode, String dbType, String dbUrl, String dbName, String username, String password,
-			List<DettaglioDataset> existingMedatataList, String hiveUser, String hivePassword, String hiveUrl, Integer tenantType) throws ImportDatabaseException {
+	public DatabaseReader(ServletContext servletContext, DatasetMapper datasetMapper, String organizationCode, String tenantCode, String dbType, String dbUrl, String dbName, String username, String password,
+			List<DettaglioDataset> existingMedatataList, String hiveUser, String hivePassword, String hiveUrl, Integer tenantType, String serviceName, String dbSchema) throws ImportDatabaseException {
 		super();
 		log.debug("[DatabaseReader::DatabaseReader] START - dbType:  " + dbType + ", dbUrl: " + dbUrl + ", dbName: " + dbName + ", username: " + username);
 		this.importFromBackoffice = false;
 		this.servletContext = servletContext;
+		this.datasetMapper = datasetMapper;
 		this.existingMedatataList = existingMedatataList;
 		this.organizationCode = organizationCode;
 		this.tenantCode = tenantCode;
 		this.dbType = dbType;
 		this.dbUrl = dbUrl;
 		this.dbName = dbName;
+		this.dbSchema = dbSchema;
+		this.username = username;
+		this.serviceName = serviceName;
+		
+		if ((dbType.equals(DatabaseConfiguration.DB_TYPE_ORACLE) || dbType.equals(DatabaseConfiguration.DB_TYPE_ORACLE_8)) && dbSchema == null)
+			this.dbSchema = username.toUpperCase();
 
-		if (username != null && username.contains(":")) {
-			String[] usernameSchemaDB = username.split(":");
-			this.username = usernameSchemaDB[0];
-			this.dbSchema = usernameSchemaDB[1].toUpperCase();
-		} else {
-			this.username = username;
-			//if (dbType.equals(DatabaseConfiguration.DB_TYPE_ORACLE) || dbType.equals(DatabaseConfiguration.DB_TYPE_ORACLE_8))
-			if (!dbType.equals(DatabaseConfiguration.DB_TYPE_HIVE)) 
-				this.dbSchema = username.toUpperCase();
-		}
+		
+//		if (username != null && username.contains(":")) {
+//			String[] usernameSchemaDB = username.split(":");
+//			this.username = usernameSchemaDB[0];
+//			this.dbSchema = usernameSchemaDB[1].toUpperCase();
+//		} else {
+//			this.username = username;
+//			//if (dbType.equals(DatabaseConfiguration.DB_TYPE_ORACLE) || dbType.equals(DatabaseConfiguration.DB_TYPE_ORACLE_8))
+//			if (!dbType.equals(DatabaseConfiguration.DB_TYPE_HIVE)) 
+//				this.dbSchema = username.toUpperCase();
+//		}
+		
 		this.password = password;
 
-		if (DatabaseConfiguration.DB_TYPE_HIVE.equals(dbType)) {
+		if (DatabaseConfiguration.DB_TYPE_HIVE.equals(dbType) || DatabaseConfiguration.DB_TYPE_HIVE_HDP3.equals(dbType)) {
 			// this.dbUrl = "yucca_datalake";
 
 			this.dbName = getHiveDbName(tenantType, tenantCode, organizationCode);
@@ -112,12 +124,13 @@ public class DatabaseReader {
 
 	}
 	
-	public DatabaseReader(ServletContext servletContext, String organizationCode,String dbType, String dbUrl, String dbName, String username, String password,List<DettaglioDataset> existingMedatataList,
-			 String hiveUser, String hivePassword, String hiveUrl,String domain,String subdomain) throws ImportDatabaseException {
+	public DatabaseReader(ServletContext servletContext, DatasetMapper datasetMapper, String organizationCode,String dbType, String dbUrl, String dbName, String username, String password,List<DettaglioDataset> existingMedatataList,
+			 String hiveUser, String hivePassword, String hiveUrl,String domain,String subdomain, String serviceName, String dbSchema) throws ImportDatabaseException {
 		super();
 		log.debug("[DatabaseReader::DatabaseReader] START - dbType:  " + dbType + ", dbUrl: " + dbUrl + ", dbName: " + dbName + ", username: " + username);
 		this.importFromBackoffice = true;
 		this.servletContext = servletContext;
+		this.datasetMapper = datasetMapper;
 		this.organizationCode = organizationCode;
 		this.existingMedatataList = existingMedatataList;
 		this.dbType = dbType;
@@ -125,19 +138,25 @@ public class DatabaseReader {
 		this.dbName = dbName;
 		this.domain = domain;
 		this.subdomain = subdomain;
+		this.serviceName = serviceName;
+		this.dbSchema = dbSchema;
+		if ((dbType.equals(DatabaseConfiguration.DB_TYPE_ORACLE) || dbType.equals(DatabaseConfiguration.DB_TYPE_ORACLE_8)) && dbSchema == null)
+			this.dbSchema = username.toUpperCase();
+		this.username = username;
+		this.serviceName = serviceName;
 
-		if (username != null && username.contains(":")) {
-			String[] usernameSchemaDB = username.split(":");
-			this.username = usernameSchemaDB[0];
-			this.dbSchema = usernameSchemaDB[1].toUpperCase();
-		} else {
-			this.username = username;
-			if (dbType.equals(DatabaseConfiguration.DB_TYPE_ORACLE) || dbType.equals(DatabaseConfiguration.DB_TYPE_ORACLE_8))
-				this.dbSchema = username.toUpperCase();
-		}
+//		if (username != null && username.contains(":")) {
+//			String[] usernameSchemaDB = username.split(":");
+//			this.username = usernameSchemaDB[0];
+//			this.dbSchema = usernameSchemaDB[1].toUpperCase();
+//		} else {
+//			this.username = username;
+//			if (dbType.equals(DatabaseConfiguration.DB_TYPE_ORACLE) || dbType.equals(DatabaseConfiguration.DB_TYPE_ORACLE_8))
+//				this.dbSchema = username.toUpperCase();
+//		}
 		this.password = password;
 
-		if (DatabaseConfiguration.DB_TYPE_HIVE.equals(dbType)) {
+		if (DatabaseConfiguration.DB_TYPE_HIVE.equals(dbType) || DatabaseConfiguration.DB_TYPE_HIVE_HDP3.equals(dbType)) {
 			// this.dbUrl = "yucca_datalake";
 
 			this.dbName = getHiveDbName(domain, subdomain, organizationCode);
@@ -191,7 +210,7 @@ public class DatabaseReader {
 				Properties props = new Properties();
 				props.setProperty("user", username);
 				props.setProperty("password", password);
-				connection = oracledriver.connect(databaseConfiguation.getConnectionUrl(dbUrl, dbName), props);
+				connection = oracledriver.connect(databaseConfiguation.getConnectionUrl(dbUrl, dbName, serviceName), props);
 
 			} catch (Exception e) {
 				log.info("[DatabaseReader::getConnection] ERROR " + e.getMessage());
@@ -212,7 +231,7 @@ public class DatabaseReader {
 			Class.forName(databaseConfiguation.getDbDriver());
 			log.debug("[DatabaseReader::getConnection] Driver Loaded.");
 			try {
-				connection = DriverManager.getConnection(databaseConfiguation.getConnectionUrl(dbUrl, dbName), username, password);
+				connection = DriverManager.getConnection(databaseConfiguation.getConnectionUrl(dbUrl, dbName, serviceName), username, password);
 				if (dbType.equals(DatabaseConfiguration.DB_TYPE_ORACLE) || dbType.equals(DatabaseConfiguration.DB_TYPE_ORACLE_8)) {
 					((oracle.jdbc.driver.OracleConnection) connection).setIncludeSynonyms(true);
 					((oracle.jdbc.driver.OracleConnection) connection).setRemarksReporting(true);
@@ -260,7 +279,7 @@ public class DatabaseReader {
 			hiveStageArea = getHiveDbName(domain, subdomain, organizationCode);
 
 		log.info("[DatabaseReader::loadSchema] getTables - dbSchema: " + dbSchema);
-		if (dbType.equals(DatabaseConfiguration.DB_TYPE_HIVE) && hiveStageArea != "" )
+		if ((dbType.equals(DatabaseConfiguration.DB_TYPE_HIVE) || dbType.equals(DatabaseConfiguration.DB_TYPE_HIVE_HDP3)) && hiveStageArea != "" )
 			tablesResultSet = meta.getTables(null, hiveStageArea, "%",types);
 		else
 			tablesResultSet = meta.getTables(null, "%", "%",types);
@@ -320,7 +339,7 @@ public class DatabaseReader {
 				// tableSchema + ", tableName: " + tableName + " tableCat: " +
 				// tableCat);
 				if (!tableName.equals("TOAD_PLAN_TABLE") && !tableName.equals("PLAN_TABLE") && checkColumOracle
-						&& ((dbType.equals(DatabaseConfiguration.DB_TYPE_HIVE) && tableSchema.toLowerCase().equals(hiveStageArea))
+						&& (((dbType.equals(DatabaseConfiguration.DB_TYPE_HIVE) || dbType.equals(DatabaseConfiguration.DB_TYPE_HIVE_HDP3) ) && tableSchema.toLowerCase().equals(hiveStageArea))
 								|| (/*
 									 * (tableSchema == null ||
 									 * username.toUpperCase().equalsIgnoreCase(
@@ -375,6 +394,8 @@ public class DatabaseReader {
 					}
 	
 					DettaglioDataset metadata = existingMetadataMap.get(tableName);
+					String[] apiContexts =  null;
+				
 	
 					if (metadata == null) {
 						table.setStatus(DatabaseTableDataset.DATABASE_TABLE_DATASET_STATUS_NEW);
@@ -396,7 +417,7 @@ public class DatabaseReader {
 						}
 						else {
 							metadata.setJdbcdbname(dbName);
-							if (DatabaseConfiguration.DB_TYPE_HIVE.equals(dbType)) {
+							if ( (DatabaseConfiguration.DB_TYPE_HIVE.equals(dbType) || DatabaseConfiguration.DB_TYPE_HIVE_HDP3.equals(dbType))) {
 								metadata.setJdbcdburl("yucca_datalake");
 							} else {
 								metadata.setJdbcdburl(dbUrl);
@@ -410,6 +431,14 @@ public class DatabaseReader {
 						}
 	
 					} else {
+						
+						//Estraggo apiContexts
+						log.info("[DatabaseReader::loadSchema] datasetMapper " + datasetMapper);
+						log.info("[DatabaseReader::loadSchema] metadata " + metadata);
+						String apiContextsStr = datasetMapper.selectApiContexts(metadata.getIdDataSource(), metadata.getDatasourceversion());
+						if(apiContextsStr!=null)
+							apiContexts = apiContextsStr.split(",");
+						
 						table.setStatus(DatabaseTableDataset.DATABASE_TABLE_DATASET_STATUS_EXISTING);
 						table.setTableType(tableType);
 	
@@ -461,7 +490,8 @@ public class DatabaseReader {
 						}
 					}
 					try {
-						table.setDataset(new DettaglioStreamDatasetResponse(metadata));
+						
+						table.setDataset(new DettaglioStreamDatasetResponse(metadata,apiContexts));
 						tables.add(table);
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -918,22 +948,23 @@ public class DatabaseReader {
 	}
 
 	public static void main(String[] args) {
-
 		String organizationCode = "csi";
 		String tenantCode = "csi_symon";
-		String dbType = DatabaseConfiguration.DB_TYPE_HIVE;
+		String dbType = DatabaseConfiguration.DB_TYPE_ORACLE;
 		String dbUrl = "";
 		String dbName = "";
 		String username = "";
 		String password = "";
+		String serviceName="";
+		String dbSchema="";
 		List<DettaglioDataset> existingMedatataList = null;
 		String hiveUser = "", hivePassword = "", 
 		hiveUrl = "";
 		Integer tenantType = null;
 		ServletContext servletContext = null;
 		try {
-			DatabaseReader databaseReader = new DatabaseReader(servletContext, organizationCode, tenantCode, dbType, dbUrl, dbName, username, password, existingMedatataList,
-					hiveUser, hivePassword, hiveUrl, tenantType);
+			DatabaseReader databaseReader = new DatabaseReader(servletContext,null,  organizationCode, tenantCode, dbType, dbUrl, dbName, username, password, existingMedatataList,
+					hiveUser, hivePassword, hiveUrl, tenantType,serviceName,dbSchema);
 			String schema = databaseReader.loadSchema();
 			System.out.println("schema " + schema);
 		} catch (Exception e) {

@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.importmetadata;
@@ -21,6 +21,7 @@ public abstract class DatabaseConfiguration {
 	public static String DB_TYPE_ORACLE_8 = "ORACLE_8";
 	public static String DB_TYPE_POSTGRESQL = "POSTGRESQL";
 	public static String DB_TYPE_HIVE = "HIVE";
+	public static String DB_TYPE_HIVE_HDP3 = "HIVE_HDP3";
 
 	protected String dbDriver;
 	protected Map<String, Integer> typesMap = new HashMap<String, Integer>();
@@ -39,7 +40,8 @@ public abstract class DatabaseConfiguration {
 
 	protected abstract void initTypesMap();
 
-	protected abstract String getConnectionUrl(String hostname, String dbname);
+	protected abstract String getConnectionUrl(String hostname, String dbname,String serviceName);
+	
 
 	protected abstract void initDbDriver();
 
@@ -50,7 +52,7 @@ public abstract class DatabaseConfiguration {
 			return new OracleConfiguration();
 		if (DB_TYPE_POSTGRESQL.equals(dbType))
 			return new PostgreSQLConfiguration();
-		if (DB_TYPE_HIVE.equals(dbType))
+		if (DB_TYPE_HIVE.equals(dbType) || DB_TYPE_HIVE_HDP3.equals(dbType))
 			return new HiveConfiguration();
 		return null;
 	}

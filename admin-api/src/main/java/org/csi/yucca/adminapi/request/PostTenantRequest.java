@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.request;
@@ -30,6 +30,8 @@ public class PostTenantRequest extends TenantRequest{
 	private String socialphoenixtablename;
 	private String socialphoenixschemaname;
 	private TenantProductContact[] productContact;
+	private Boolean flagmigrated;
+	private String hdpversion;
 	
 	public BundlesRequest getBundles() {
 		return bundles;
@@ -152,5 +154,18 @@ public class PostTenantRequest extends TenantRequest{
 	public void setProductContact(TenantProductContact[] productContact) {
 		this.productContact = productContact;
 	}
+	public Boolean getflagmigrated() {
+		return flagmigrated;
+	}
+	public void setflagmigrated(Boolean flagmigrated) {
+		this.flagmigrated = flagmigrated;
+	}
+	public String getHdpVersion() {
+		return hdpversion;
+	}
+	public void setHdpVersion(String hdpversion) {
+		this.hdpversion = hdpversion;
+	}
+	
 	
 }

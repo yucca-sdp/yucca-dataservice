@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.dataservice.metadataapi.service;
@@ -12,6 +12,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
@@ -46,6 +47,7 @@ import org.csi.yucca.dataservice.metadataapi.service.response.ErrorResponse;
 import org.csi.yucca.dataservice.metadataapi.util.Config;
 import org.csi.yucca.dataservice.metadataapi.util.DCatSdpHelper;
 import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
+import org.jboss.resteasy.spi.LoggableFailure;
 
 import com.google.gson.Gson;
 
@@ -320,8 +322,15 @@ public class DcatService extends AbstractService {
 					dsDCAT.setTitle(new I18NString("it", metadataST.getName()));
 					// V01 - fixed value
 					// http://publications.europa.eu/resource/authority/frequency/UNKNOWN
-
-					dsDCAT.setAccrualPeriodicity(new IdString("http://publications.europa.eu/resource/authority/frequency/UNKNOWN"));
+					String freqStr ="UNKNOWN";
+					if ( metadataST.getOpendata() != null) {
+						List<String> freq = metadataST.getOpendata().getUpdateFrequency();
+						log.info("FreqList " + freq);
+						if (freq != null && freq.size()>0)
+						freqStr = freq.get(0);
+					}
+					
+					dsDCAT.setAccrualPeriodicity(new IdString("http://publications.europa.eu/resource/authority/frequency/"+freqStr));
 					// dsDCAT.setAccrualPeriodicity(metadata.getFps());
 
 					// String keyWords = "";

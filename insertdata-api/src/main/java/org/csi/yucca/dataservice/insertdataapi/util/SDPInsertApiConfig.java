@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.dataservice.insertdataapi.util;
@@ -32,12 +32,21 @@ public class SDPInsertApiConfig {
 	// for ENABLE_DATA_MASSIVE_SERVICE_HTTP,ENABLE_STREAM_MASSIVE_SERVICE_HTTP,
 	// ENABLE_MEDIA_MASSIVE_SERVICE_HTTP,ENABLE_STREAM_REALTIME_SERVICE_JMS
 	public static final String PHOENIX_URL = "PHOENIX_URL";
+	public static final String PHOENIX_HDP3_URL= "PHOENIX_HDP3_URL";
 	public static final String SOLR_INDEXER_ENABLED = "SOLR_INDEXER_ENABLED";
 	public static final String SOLR_URL = "SOLR_URL";
 	public static final String SOLR_TYPE_ACCESS = "SOLR_TYPE_ACCESS";
 	public static final String SOLR_USERNAME = "SOLR_USERNAME";
 	public static final String SOLR_PASSWORD = "SOLR_PASSWORD";
 	public static final String SOLR_SECURITY_DOMAIN_NAME = "SOLR_SECURITY_DOMAIN_NAME";
+	
+	
+	public static final String SOLR_TYPE_ACCESS_HDP3="SOLR_TYPE_ACCESS_HDP3";
+	public static final String SDP_SOLR_HDP3_URL="SDP_SOLR_HDP3_URL";
+
+	public static final String KNOX_SDNET_USERNAME_HDP3 = "KNOX_SDNET_USERNAME_HDP3";
+	public static final String KNOX_SDNET_PASSWORD_HDP3 = "KNOX_SDNET_PASSWORD_HDP3";
+
 
 	// for ENABLE_DATA_MASSIVE_SERVICE_HTTP (to delete)
 	public static final String KNOX_SDNET_ULR = "KNOX_SDNET_ULR";
@@ -67,6 +76,15 @@ public class SDPInsertApiConfig {
 	public static final String RBAC_USER_STORE_WEBSERVICE_URL = "RBAC_USER_STORE_WEBSERVICE_URL";
 	public static final String RBAC_WEBSERVICE_USER = "RBAC_WEBSERVICE_USER";
 	public static final String RBAC_WEBSERVICE_PASSWORD = "RBAC_WEBSERVICE_PASSWORD";
+	
+	public static final String KAFKA_BROKERS = "KAFKA_BROKERS";
+	public static final String KAFKA_API_URL = "KAFKA_API_URL";
+	
+	
+	public static final String DARWIN_CONFIG_HOST = "DARWIN_CONFIG_HOST";
+	public static final String DARWIN_CONFIG_DATABASE = "DARWIN_CONFIG_DATABASE";
+	public static final String DARWIN_CONFIG_USER = "DARWIN_CONFIG_USER";	
+	public static final String DARWIN_CONFIG_PASSWORD = "DARWIN_CONFIG_PASSWORD";	
 
 	public static SDPInsertApiConfig instance = null;
 	private static int anno_init = 0;
@@ -113,13 +131,19 @@ public class SDPInsertApiConfig {
 		params.put(ENABLE_AUTHENTICATION_FILTER_HTTP, rb.getString(ENABLE_AUTHENTICATION_FILTER_HTTP));
 
 		params.put(PHOENIX_URL, rb.getString(PHOENIX_URL));
-		params.put(SOLR_URL, rb.getString(SOLR_URL));
+		params.put(PHOENIX_HDP3_URL, PHOENIX_HDP3_URL);
 
+		params.put(SOLR_URL, rb.getString(SOLR_URL));
 		params.put(SOLR_TYPE_ACCESS, rb.getString(SOLR_TYPE_ACCESS));
 		params.put(SOLR_USERNAME, rb.getString(SOLR_USERNAME));
 		params.put(SOLR_PASSWORD, rb.getString(SOLR_PASSWORD));
 		params.put(SOLR_SECURITY_DOMAIN_NAME, rb.getString(SOLR_SECURITY_DOMAIN_NAME));
 
+		params.put(SOLR_TYPE_ACCESS_HDP3, rb.getString(SOLR_TYPE_ACCESS_HDP3));
+		params.put(KNOX_SDNET_USERNAME_HDP3, rb.getString(KNOX_SDNET_USERNAME_HDP3));
+		params.put(KNOX_SDNET_PASSWORD_HDP3, rb.getString(KNOX_SDNET_PASSWORD_HDP3));
+		params.put(SDP_SOLR_HDP3_URL, rb.getString(SDP_SOLR_HDP3_URL));
+		
 		params.put(JMS_MB_INTERNAL_URL, rb.getString(JMS_MB_INTERNAL_URL));
 		params.put(JMS_MB_INTERNAL_USERNAME, rb.getString(JMS_MB_INTERNAL_USERNAME));
 		params.put(JMS_MB_INTERNAL_PASSWORD, rb.getString(JMS_MB_INTERNAL_PASSWORD));
@@ -149,6 +173,14 @@ public class SDPInsertApiConfig {
 		params.put(RBAC_USER_STORE_WEBSERVICE_URL, rb.getString(RBAC_USER_STORE_WEBSERVICE_URL));
 		params.put(RBAC_WEBSERVICE_USER, rb.getString(RBAC_WEBSERVICE_USER));
 		params.put(RBAC_WEBSERVICE_PASSWORD, rb.getString(RBAC_WEBSERVICE_PASSWORD));
+		
+		params.put(KAFKA_BROKERS,  rb.getString(KAFKA_BROKERS));
+		params.put(KAFKA_API_URL,  rb.getString(KAFKA_API_URL));
+		
+		params.put(DARWIN_CONFIG_HOST,  rb.getString(DARWIN_CONFIG_HOST));
+		params.put(DARWIN_CONFIG_DATABASE,  rb.getString(DARWIN_CONFIG_DATABASE));
+		params.put(DARWIN_CONFIG_USER,  rb.getString(DARWIN_CONFIG_USER));		
+		params.put(DARWIN_CONFIG_PASSWORD,  rb.getString(DARWIN_CONFIG_PASSWORD));		
 
 	}
 
@@ -180,12 +212,33 @@ public class SDPInsertApiConfig {
 		return params.get(SOLR_USERNAME);
 	}
 
+	public String getSolrAccessTypeHdp3() {
+		return params.get(SOLR_TYPE_ACCESS_HDP3);
+	}
+	
 	public String getSolrPassword() {
 		return params.get(SOLR_PASSWORD);
 	}
+	
 
+	public String getKnoxSdnetUsernameHdp3() {
+		return params.get(KNOX_SDNET_USERNAME_HDP3);
+	}
+
+	public String getKnoxSdnetPasswordHdp3() {
+		return params.get(KNOX_SDNET_PASSWORD_HDP3);
+	}
+	
+	public String getSolrHdp3Url() {
+		return params.get(SDP_SOLR_HDP3_URL);
+	}
+	
 	public String getPhoenixUrl() {
 		return params.get(PHOENIX_URL);
+	}
+	
+	public static String getPhoenixHdp3Url() {
+		return PHOENIX_HDP3_URL;
 	}
 
 	public String getJMSMbInternalUrl() {
@@ -211,6 +264,31 @@ public class SDPInsertApiConfig {
 	public String getJMSMbExternalPassword() {
 		return params.get(JMS_MB_EXTERNAL_PASSWORD);
 	}
+	
+	public String getKafkaBrokers() {
+		return params.get(KAFKA_BROKERS);
+	}
+	
+	public String getKafkaApiUrl() {
+		return params.get(KAFKA_API_URL);
+	}
+	
+	public String getDarwinConfigHost() {
+		return params.get(DARWIN_CONFIG_HOST);
+	}
+	
+	public String getDarwinConfigDatabase() {
+		return params.get(DARWIN_CONFIG_DATABASE);
+	}
+	
+	public String getDarwinConfigUser() {
+		return params.get(DARWIN_CONFIG_USER);
+	}
+	
+	public String getDarwinConfigPassword() {
+		return params.get(DARWIN_CONFIG_PASSWORD);
+	}
+	
 
 	public boolean isSolrIndexerEnabled() {
 		String solrIndexerParam = params.get(SOLR_INDEXER_ENABLED);

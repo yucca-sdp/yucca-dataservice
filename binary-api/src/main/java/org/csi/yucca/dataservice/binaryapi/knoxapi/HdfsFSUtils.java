@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.dataservice.binaryapi.knoxapi;
@@ -33,19 +33,16 @@ public class HdfsFSUtils {
 
 	private static Logger logger = RootLogger.getLogger("KnoxHdfsFSUtils");
 
-	public static InputStream readFile(String remotePath, String fileName)
+	/*public static InputStream readFile(String remotePath, String fileName)  // NON VIENE MAI USATO E VA IN CONFLITTO CON IL METODO SOTTO
 			throws Exception{
 		return readFile(remotePath+"/"+fileName);
-	}
-	
+	}*/
 
-
-	public static InputStream readFile(String pathForUri) throws Exception {
+	public static InputStream readFile(String pathForUri, String hdpVersion) throws Exception {
 		InputStream input = null;
 		logger.info("[KnoxHdfsFSUtils::readFile] info for path:["+pathForUri+"]");
-		try {
-			
-			input = new KnoxWebHDFSConnection().open(pathForUri);
+		try {		
+			input = new KnoxWebHDFSConnection(hdpVersion).open(pathForUri);
 			logger.info("[KnoxHdfsFSUtils::readFile] info for path:["+pathForUri+"] END");
 		} catch (Exception e) {
 			logger.error("[KnoxHdfsFSUtils::readFile] info for path:["+pathForUri+"] Error", e);
@@ -73,7 +70,7 @@ public class HdfsFSUtils {
 
 		try {
 
-			FileStatusesContainer filesc  = new KnoxWebHDFSConnection().listStatus(remotePath);
+			FileStatusesContainer filesc  = new KnoxWebHDFSConnection(mdMetadata.getDataset().getHdpVersion()).listStatus(remotePath);
 			ListOfFiles list = new ListOfFiles();
 			
 			logger.info("[KnoxHdfsFSUtils::readDir] "+ Arrays.toString(mapVersionMaxFileds.entrySet().toArray()) );
@@ -152,12 +149,12 @@ public class HdfsFSUtils {
 	
 	
 
-	public static String writeFile(String remotePath, InputStream is, String fileName) throws Exception {
+	public static String writeFile(String remotePath, InputStream is, String fileName, String hdpVersion) throws Exception {
 		logger.info("[KnoxHdfsFSUtils::writeFile] info for path:["+remotePath+"]["+fileName+"]");
 		
 		try {
 			logger.info("[WriteFileHdfsAction::writeFile] check for file exists:["+remotePath+"]["+fileName+"]");
-			FileStatusContainer fs = new KnoxWebHDFSConnection().getFileStatus(remotePath+"/"+fileName);
+			FileStatusContainer fs = new KnoxWebHDFSConnection(hdpVersion).getFileStatus(remotePath+"/"+fileName);
 			if (fs.getFileStatus() != null){
 				logger.error("[WriteFileHdfsAction::writeFile] FileNotFoundException Error getFileStatus = " + fs.getFileStatus());
 				throw new Exception("File ["+remotePath+"/"+fileName+"] already exists!");
@@ -177,10 +174,10 @@ public class HdfsFSUtils {
 		try {
 			logger.info("[WriteFileHdfsAction::writeFile] InputStream:["+is+"]");
 			logger.info("[WriteFileHdfsAction::writeFile] path before create:["+remotePath+"/"+fileName+"]");
-			uri = new KnoxWebHDFSConnection().create(remotePath+"/"+fileName, is);
+			uri = new KnoxWebHDFSConnection(hdpVersion).create(remotePath+"/"+fileName, is);
 			
 			logger.info("[WriteFileHdfsAction::writeFile] uri after create:["+uri+"]");
-			new KnoxWebHDFSConnection().setPermission(remotePath+"/"+fileName, "660");
+			new KnoxWebHDFSConnection(hdpVersion).setPermission(remotePath+"/"+fileName, "660");
 			//new KnoxWebHDFSConnection().setOwner(remotePath+"/"+fileName, Config.KNOX_USER, Config.KNOX_GROUP);
 			
 		} catch (Exception e) {
@@ -193,12 +190,12 @@ public class HdfsFSUtils {
 	}
 	
 	
-	public static FileStatus statusFile(String remotePath) throws Exception {
+	public static FileStatus statusFile(String remotePath, String hdpVersion) throws Exception {
 		logger.info("[KnoxHdfsFSUtils::statusFile] info for path:["+remotePath+"]");
 		FileStatus fs = null;
 		try {
 			
-			FileStatusContainer fsc = new KnoxWebHDFSConnection().getFileStatus(remotePath);
+			FileStatusContainer fsc = new KnoxWebHDFSConnection(hdpVersion).getFileStatus(remotePath);
 			if (fsc != null)
 				fs = fsc.getFileStatus();
 			logger.info("[KnoxHdfsFSUtils::statusFile] info for path:["+remotePath+"] END");

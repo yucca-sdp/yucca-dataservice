@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.service.impl;
@@ -363,8 +363,10 @@ public class TenantServiceImpl implements TenantService {
 
 		Tenant tenant = createTenant(request);
 		
-	
-
+		// update hdp3
+		tenant.setflagmigrated(true);
+		tenant.setHdpVersion(Constants.HDP_VERSION_3);
+		
 		// inserimento bundles
 		Bundles bundles = insertBundles(bundlesRequest, request.getIdTenantType());
 
@@ -811,6 +813,11 @@ public class TenantServiceImpl implements TenantService {
 		
 		// set tenant status
 		tenant.setIdTenantStatus(Status.REQUEST_INSTALLATION.id());
+		
+		//set migration fields
+		//TODO scommentare quando si decide di creare direttamente sulla 3
+		//tenant.setflagmigrated(true);
+		//tenant.setHdpVersion(Constants.HDP_VERSION_3);
 
 		// set id share type
 		if (

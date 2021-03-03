@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.dataservice.insertdataapi.solr;
@@ -23,7 +23,6 @@ import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsDto;
 import org.csi.yucca.dataservice.insertdataapi.solr.KnoxSolrSingleton.TEHttpSolrClient;
 import org.csi.yucca.dataservice.insertdataapi.util.DateUtil;
-import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
 
 import com.mongodb.BulkWriteResult;
 
@@ -35,15 +34,16 @@ public class SDPInsertApiSolrDataAccess {
 
 	SolrClient server = null;
 
-	public SDPInsertApiSolrDataAccess() throws ClassNotFoundException {
+	public SDPInsertApiSolrDataAccess(SolrClient server) throws ClassNotFoundException {
+		this.server = server;
 		
-		if ("KNOX".equalsIgnoreCase(SDPInsertApiConfig.instance.getSolrTypeAccess()))
-		{
-			server = KnoxSolrSingleton.getServer();
-		}
-		else {
-			server = CloudSolrSingleton.getServer();
-		}
+//		if ("KNOX".equalsIgnoreCase(SDPInsertApiConfig.instance.getSolrTypeAccess()))
+//		{
+//			server = KnoxSolrSingleton.getServer();
+//		}
+//		else {
+//			server = CloudSolrSingleton.getServer();
+//		}
 		
 	}
 
@@ -195,15 +195,20 @@ public class SDPInsertApiSolrDataAccess {
 	}
 
 	public int deleteData(String datasetType, String tenant, Long idDataset, Long datasetVersion) throws Exception {
+		
+		log.info("[SDPInsertApiSolrDataAccess::deleteData - START -  datasetType: " + datasetType + "- tenant: "
+				+ tenant + "- idDataset: " + idDataset + "- datasetVersion: "  + datasetVersion);
 
 		if (datasetVersion==null)
 			datasetVersion = -1L;
 		
 		CollectionConfDto conf = SDPInsertMedataFactory.getSDPInsertMetadataApiAccess().getCollectionInfo(tenant, idDataset, datasetVersion, datasetType);
+		log.info("[SDPInsertApiSolrDataAccess::deleteData - START -  collection: " + conf.getSolrCollectionName());
 
 		String query = "iddataset_l:" + idDataset;
 		if (datasetVersion != null && datasetVersion > 0)
 			query += " AND datasetversion_l:" + datasetVersion;
+		log.info("[SDPInsertApiSolrDataAccess::deleteData - START -  query: " + query);
 		UpdateResponse updateResponse =server.deleteByQuery(conf.getSolrCollectionName(), query,1000);
 		
 		//UpdateResponse updateResponse = server.commit();

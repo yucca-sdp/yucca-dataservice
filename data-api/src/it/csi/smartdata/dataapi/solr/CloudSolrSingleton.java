@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package it.csi.smartdata.dataapi.solr;
@@ -14,7 +14,8 @@ import org.apache.solr.client.solrj.impl.HttpClientUtil;
 
 public class CloudSolrSingleton {
 	//private CloudSolrClient server;
-	private SolrClient server;
+	private SolrClient serverHdp2;
+	private SolrClient serverHdp3;
 	
 	private CloudSolrSingleton() {
 		try {
@@ -53,7 +54,8 @@ public class CloudSolrSingleton {
 			
 			//HttpClientUtil.setConfigurer( new  org.apache.solr.client.solrj.impl.Krb5HttpClientConfigurer());
 			
-			server = new CloudSolrClient(SDPDataApiConfig.getInstance().getSolrUrl());
+			serverHdp2 = new CloudSolrClient(SDPDataApiConfig.getInstance().getSolrUrl());
+			serverHdp3 = new CloudSolrClient(SDPDataApiConfig.getInstance().getSolrHdp3Url());
 		} catch (Exception e) {
 			e.printStackTrace();
 		} catch (Throwable th) {
@@ -69,8 +71,11 @@ public class CloudSolrSingleton {
 	    private static final CloudSolrSingleton INSTANCE = new CloudSolrSingleton();
 	  }
 
-	  public static SolrClient getServer() {
-	    return SingletonHolder.INSTANCE.server;
-	  }
+	  public static SolrClient getServerHdp2() {
+		    return SingletonHolder.INSTANCE.serverHdp2;
+		  }
+	  public static SolrClient getServerHdp3() {
+		    return SingletonHolder.INSTANCE.serverHdp3;
+		  }
 
 }

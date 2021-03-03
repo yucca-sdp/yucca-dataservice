@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.response;
@@ -27,6 +27,8 @@ public class DettaglioStreamDatasetResponse extends DataSourceResponse {
 	private OpenDataResponse opendata;
 	private LicenseResponse license;
 	private DcatResponse dcat;
+	private String hdpVersion;
+	private String[] apiContexts;
 	
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private StreamDettaglioResponse stream;
@@ -49,12 +51,14 @@ public class DettaglioStreamDatasetResponse extends DataSourceResponse {
 	}
 	
 	@JsonIgnore
-	private void setAllParameter(DettaglioDataset dettaglioDataset)throws Exception{
+	private void setAllParameter(DettaglioDataset dettaglioDataset,String[] apiContexts )throws Exception{
 		Util.addSharingTenants(dettaglioDataset.getSharingTenant(), this.sharingTenants);
 		Util.addComponents(dettaglioDataset.getComponents(), this.components);
 		this.opendata = new OpenDataResponse(dettaglioDataset);
 		this.license = new LicenseResponse(dettaglioDataset.getLicense());
 		this.dcat = new DcatResponse(dettaglioDataset.getDcat());
+		this.hdpVersion = dettaglioDataset.getHdpVersion();
+		this.apiContexts = apiContexts;
 	}
 	
 	public DettaglioStreamDatasetResponse(
@@ -77,9 +81,9 @@ public class DettaglioStreamDatasetResponse extends DataSourceResponse {
 		this.stream = new StreamDettaglioResponse(dettaglioStream, dettaglioSmartobject, listInternalStream);
 	}
 	
-	public DettaglioStreamDatasetResponse(DettaglioDataset dettaglioDataset) throws Exception {
+	public DettaglioStreamDatasetResponse(DettaglioDataset dettaglioDataset, String[] apiContexts ) throws Exception {
 		super(dettaglioDataset);
-		setAllParameter(dettaglioDataset);
+		setAllParameter(dettaglioDataset, apiContexts);
 		this.dataset = new DatasetDettaglioResponse(dettaglioDataset);
 	}
 
@@ -139,4 +143,18 @@ public class DettaglioStreamDatasetResponse extends DataSourceResponse {
 		this.dataset = dataset;
 	}
 
+
+	public String[] getApiContexts() {
+		return apiContexts;
+	}
+
+
+	public void setApiContexts(String[] apiContexts) {
+		this.apiContexts = apiContexts;
+	}
+
+
+
+
+	
 }

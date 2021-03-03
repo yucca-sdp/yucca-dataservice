@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.conf;
@@ -12,6 +12,8 @@ import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.log4j.Logger;
+import org.csi.yucca.adminapi.service.impl.MailServiceImpl;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Value;
@@ -68,6 +70,29 @@ public class AppConfig extends WebMvcConfigurerAdapter {
 
 	@Value("${max.active}")
 	private int maxActive;
+	
+
+	// mail
+	@Value("${mail.host}")
+	private String mailHost;
+
+	@Value("${mail.port}")
+	private String mailPort;
+
+	@Value("${mail.smtp.starttls.enable}")
+	private String mailsmtpStarttlEnable;
+
+	@Value("${mail.smtp.auth}")
+	private String mailSmtpAuth;
+
+	@Value("${mail.transport.protocol}")
+	private String mailTransportProtocol;
+
+	@Value("${mail.debug}")
+	private String mailDebug;
+
+	private static final Logger logger = Logger.getLogger(AppConfig.class);
+
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -78,8 +103,9 @@ public class AppConfig extends WebMvcConfigurerAdapter {
 
 	@Bean
 	public JavaMailSender getMailSender() {
+		logger.info("[AppConfig::getMailSender] - START");
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-
+		
 		/*
 		
 		<parameter name="mail.smtp.host">
@@ -111,17 +137,18 @@ public class AppConfig extends WebMvcConfigurerAdapter {
 		
 		
 		// Using gmail
-		mailSender.setHost("@@mailsender.host@@");
-//		mailSender.setPort(@@mailsender.host@@);
+		mailSender.setHost(mailHost);
 		
-		mailSender.setUsername("@@mailsender.username@@");
+//		mailSender.setUsername("@@mailsender.username@@");
 //		mailSender.setPassword("@@mailsender.password@@");
 		
 		Properties javaMailProperties = new Properties();
-		javaMailProperties.put("mail.smtp.starttls.enable", "@@mail.smtp.starttls.enable@@");
-		javaMailProperties.put("mail.smtp.auth", "@@mail.smtp.auth@@");
-		javaMailProperties.put("mail.transport.protocol", "@@mail.transport.protocol@@");
-		javaMailProperties.put("mail.debug", "@@mail.debug@@");
+		javaMailProperties.put("mail.smtp.starttls.enable", mailsmtpStarttlEnable);
+		javaMailProperties.put("mail.smtp.auth", mailSmtpAuth);
+		javaMailProperties.put("mail.transport.protocol", mailTransportProtocol);
+		javaMailProperties.put("mail.debug", mailDebug);
+
+		logger.info("[AppConfig::getMailSender] - mailTransportProtocol:" + mailTransportProtocol);
 
 		mailSender.setJavaMailProperties(javaMailProperties);
 		return mailSender;

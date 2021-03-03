@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.mapper;
@@ -30,12 +30,22 @@ import org.csi.yucca.adminapi.util.Constants;
 public interface DatasetMapper {
 	
 	public static final String DATASET_TABLE = Constants.SCHEMA_DB + "yucca_dataset";
+	public static final String DATASET_SELECT_HDPVERSION = 
+			//HDP version, IF dataset has hdpversion THEN dataset.hdpversion ELSE tenant.hdpversion
+    		// the first match in the case is used
+    		" case " +
+    			"when yucca_dataset.hdpversion IS NOT NULL then yucca_dataset.hdpversion " + 
+    			"when yucca_tenant.hdpversion IS NOT NULL then yucca_tenant.hdpversion " +
+    			"when yucca_tenant.hdpversion IS NULL then null " +
+    		"end as hdpversion ";
+    			
 	
 	/*************************************************************************
 	 * 					SELECT DATSET BY GROUP
 	 * ***********************************************************************/	
 	public static final String SELECT_DATSET_BY_GROUP =  
 			" SELECT DATASET.id_data_source, DATASET.datasourceversion" +
+			//DATASET_SELECT_HDPVERSION + 
 			"   FROM " + DATASET_TABLE + " DATASET, " +  DataSourceGroupMapper.R_DATA_SOURCE_DATASOURCEGROUP_TABLE  + " R_DS_GROUP " + 
 			" WHERE id_datasourcegroup = #{groupId} and " +
 			"      datasourcegroupversion = #{groupVersion} and " +
@@ -162,7 +172,7 @@ public interface DatasetMapper {
 			  @Param("datasourcegroupversion")  Integer datasourcegroupversion );	
 	
 	public static final String SELECT_LISTA_DATASET_BY_ORGANIZATION = 
-		    " SELECT " + 
+		    " SELECT " + 		    		
 		     " case yucca_d_dataset_subtype.dataset_subtype " +
 			  "	when 'bulkDataset' then coalesce(yucca_dataset.solrcollectionname, yucca_organization.datasolrcollectionname) " +
 			 "	when 'socialDataset' then coalesce(yucca_dataset.solrcollectionname, yucca_organization.socialsolrcollectionname) " +
@@ -201,8 +211,11 @@ public interface DatasetMapper {
 			" yucca_organization.description organization_description, yucca_organization.id_organization, yucca_r_tenant_data_source.isactive, " +
 			" yucca_r_tenant_data_source.ismanager, yucca_tenant.tenantcode, yucca_tenant.name tenant_name, " +
 			" yucca_tenant.description tenant_description, yucca_tenant.id_tenant, " +
+				
+			DATASET_SELECT_HDPVERSION +
+	    			
 		// COMPONENTS
-			" ( select (row_to_json(yucca_d_license)) " + 
+			", ( select (row_to_json(yucca_d_license)) " + 
 			" from " + LicenseMapper.LICENSE_TABLE  + " yucca_d_license " + 
 			" where yucca_d_license.id_license = yucca_data_source.id_license " +
 			" ) license, " +
@@ -339,7 +352,8 @@ public interface DatasetMapper {
 		@Result(property = "dbhivetable", column = "dbhivetable"),
 		@Result(property = "availablehive", column = "availablehive"),
 		@Result(property = "availablespeed", column = "availablespeed"),
-		@Result(property = "istransformed", column = "istransformed")
+		@Result(property = "istransformed", column = "istransformed"),
+		@Result(property = "hdpVersion", column = "hdpversion")
 		
       })		
 	  @Select({"<script>", SELECT_LISTA_DATASET_BY_ORGANIZATION, WHERE_DETTAGLIO_DATASET_START + 
@@ -462,7 +476,8 @@ public interface DatasetMapper {
 		@Result(property = "dbhivetable", column = "dbhivetable"),
 		@Result(property = "availablehive", column = "availablehive"),
 		@Result(property = "availablespeed", column = "availablespeed"),
-		@Result(property = "istransformed", column = "istransformed")
+		@Result(property = "istransformed", column = "istransformed"),
+		@Result(property = "hdpVersion", column = "hdpversion")
       })
 	
 	  @Select({"<script>", SELECT_LISTA_DATASET_BY_ORGANIZATION, WHERE_DETTAGLIO_DATASET_START + 
@@ -754,7 +769,8 @@ public interface DatasetMapper {
 	
 	public static final String SELECT_DETTAGLIO_DATASET = SELECT_DETTAGLIO_DATASET_CAMPI + 
 			", yucca_dataset.jdbcdburl, yucca_dataset.jdbcdbname, yucca_dataset.jdbcdbtype,  yucca_dataset.jdbctablename " + 
-			", yucca_dataset.availablehive, yucca_dataset.availablespeed, yucca_dataset.istransformed,  yucca_dataset.dbhiveschema,   yucca_dataset.dbhivetable "
+			", yucca_dataset.availablehive, yucca_dataset.availablespeed, yucca_dataset.istransformed,  yucca_dataset.dbhiveschema,   yucca_dataset.dbhivetable, "
+			+ DATASET_SELECT_HDPVERSION
 			+ SELECT_DETTAGLIO_DATASET_FROM;
 	public static final String SELECT_DETTAGLIO_DATASET_CON_JDBC = SELECT_DETTAGLIO_DATASET_CAMPI + 	
 			", yucca_dataset.jdbcdburl, yucca_dataset.jdbcdbname, yucca_dataset.jdbcdbtype,  yucca_dataset.jdbctablename "
@@ -1201,7 +1217,7 @@ public interface DatasetMapper {
 		@Result(property = "availablespeed", column = "availablespeed"), 
 		@Result(property = "istransformed", column = "istransformed"), 
 		@Result(property = "dbhiveschema", column = "dbhiveschema"), 
-		@Result(property = "dbhivetable", column = "dbhivetable")  
+		@Result(property = "dbhivetable", column = "dbhivetable")
       })
 	  @Select({"<script>", SELECT_DETTAGLIO_DATASET,WHERE_DETTAGLIO_DATASET_START + 
 		  			WHERE_DETTAGLIO_DATASET_DATASETCODE+ WHERE_DETTAGLIO_DATASET_DATASOURCEVERSION+"</script>"}) 
@@ -1390,8 +1406,10 @@ public interface DatasetMapper {
 			" yucca_tenant.name tenant_name, " +
 			" yucca_tenant.description tenant_description, " +
 			" yucca_tenant.id_tenant, " +
+			
+			DATASET_SELECT_HDPVERSION +
 			  
-			" (select array_to_json(array_agg(row_to_json(yucca_d_tag))) from " + DataSourceMapper.R_TAG_DATA_SOURCE_TABLE + " yucca_r_tag_data_source, " +  TagMapper.TAG_TABLE  + " yucca_d_tag " +
+			", (select array_to_json(array_agg(row_to_json(yucca_d_tag))) from " + DataSourceMapper.R_TAG_DATA_SOURCE_TABLE + " yucca_r_tag_data_source, " +  TagMapper.TAG_TABLE  + " yucca_d_tag " +
 			"       where yucca_data_source.id_data_source = yucca_r_tag_data_source.id_data_source AND " +
 			"       yucca_data_source.datasourceversion = yucca_r_tag_data_source.datasourceversion " +
 			"       and yucca_r_tag_data_source.id_tag = yucca_d_tag.id_tag) tags " +
@@ -1806,7 +1824,18 @@ public interface DatasetMapper {
 			  @Param("idDatasourcegroup")Long idDatasourcegroup, @Param("datasetGroupVersion")Integer datasetGroupVersion);
 
 
+
+/*************************************************************************
+* 					SELECT DATASET API CONTEXTS
+* ***********************************************************************/
+public static final String SELECT_API_CONTEXTS = 
+" SELECT string_agg(apisubtype,',') apiContexts "
++ "FROM yucca_api where id_data_source = #{idDataSource} and datasourceversion = #{dataSourceVersion} ";
 	
+@Select(SELECT_API_CONTEXTS) 
+String  selectApiContexts(@Param("idDataSource") Integer idDataSource, @Param("dataSourceVersion") Integer dataSourceVersion);	
+
+
 
 
 	

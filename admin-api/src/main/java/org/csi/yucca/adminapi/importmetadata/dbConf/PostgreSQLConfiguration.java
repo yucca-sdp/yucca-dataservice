@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.importmetadata.dbConf;
@@ -94,7 +94,7 @@ public class PostgreSQLConfiguration extends DatabaseConfiguration {
 	}
 
 	@Override
-	protected String getConnectionUrl(String hostname, String dbname) {
+	protected String getConnectionUrl(String hostname, String dbname,String serviceName) {
 		return "jdbc:postgresql://" + hostname + "/" + dbname; // jdbc:postgresql://hostname:port/dbname
 	}
 

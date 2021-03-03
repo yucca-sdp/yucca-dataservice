@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.delegate;
@@ -103,6 +103,7 @@ public class HttpDelegate {
 			postMethod.addHeader(new BasicScheme().authenticate(creds, postMethod, null));
 		}
 		if (stringData != null) {
+			logger.info("[HttpDelegate::makeHttpPost] stringData " + stringData);
 			StringEntity requestEntity = new StringEntity(stringData,
 					contentType == null ? ContentType.APPLICATION_JSON : contentType);
 			postMethod.setEntity(requestEntity);
@@ -132,6 +133,8 @@ public class HttpDelegate {
 				HttpEntity entity = response.getEntity();
 
 				String result = EntityUtils.toString(entity);
+				logger.info("[HttpDelegate::makeHttpPost] statusCode>00 result " +  result);
+
 
 				// result = {"output":null,"error_name":"Json validation
 				// failed","error_code":"E012","error_message":null}
@@ -200,7 +203,10 @@ public class HttpDelegate {
 
 				HttpEntity entity = response.getEntity();
 
+				
 				String result = EntityUtils.toString(entity);
+				logger.error("[HttpDelegate::makeHttpPost] ERROR result " + result);
+
 
 				// result = {"output":null,"error_name":"Json validation
 				// failed","error_code":"E012","error_message":null}
@@ -208,6 +214,8 @@ public class HttpDelegate {
 				JSONParser jsonParser = new JSONParser();
 
 				jsonObject = (JSONObject) jsonParser.parse(result);
+
+				logger.error("[HttpDelegate::makeHttpPost] ERROR jsonObject " + jsonObject);
 
 				if (jsonObject != null) {
 					errorName = (String) jsonObject.get("error_name");

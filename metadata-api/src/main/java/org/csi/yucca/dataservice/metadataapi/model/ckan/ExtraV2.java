@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.dataservice.metadataapi.model.ckan;
@@ -57,6 +57,8 @@ public class ExtraV2 {
 	private String subdomain;
 
 	private Double stream_fps;
+	
+	private String external_reference;
 
 	public Long getDataset_id() {
 		return dataset_id;
@@ -389,6 +391,14 @@ public class ExtraV2 {
 
 	public void setUpdate_rate(String update_rate) {
 		this.update_rate = update_rate;
+	}
+
+	public String getExternal_reference() {
+		return external_reference;
+	}
+
+	public void setExternal_reference(String external_reference) {
+		this.external_reference = external_reference;
 	}
 
 	

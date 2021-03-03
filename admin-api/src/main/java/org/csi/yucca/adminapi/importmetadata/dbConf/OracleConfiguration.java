@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.importmetadata.dbConf;
@@ -55,8 +55,11 @@ public class OracleConfiguration extends DatabaseConfiguration {
 	}
 
 	@Override
-	protected String getConnectionUrl(String hostname, String dbname) {
-		return "jdbc:oracle:thin:@" + hostname + ":" + dbname; // jdbc:oracle:thin:@localhost:1521:caspian;
+	protected String getConnectionUrl(String hostname, String dbname, String serviceName) {
+		if (serviceName != null && serviceName.length()>0)
+			return "jdbc:oracle:thin:@//" + hostname + "/" + serviceName;
+		else
+			return "jdbc:oracle:thin:@" + hostname + ":" + dbname; // jdbc:oracle:thin:@localhost:1521:caspian;
 	}
 
 	@Override

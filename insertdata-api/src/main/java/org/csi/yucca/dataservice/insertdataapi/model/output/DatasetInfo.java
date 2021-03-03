@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.dataservice.insertdataapi.model.output;
@@ -19,6 +19,8 @@ public class DatasetInfo {
 	private String datasetSubdomain = null;
 	private String datasetCode = null;
 	private String organizationCode = null;
+	private String hdpVersion = null;
+	
 
 	private CollectionConfDto collectionInfo = null;
 	
@@ -110,6 +112,12 @@ public class DatasetInfo {
 
 	public void setOrganizationCode(String organizationCode) {
 		this.organizationCode = organizationCode;
+	}
+	public void setHdpVersion(String hdpVersion) {
+		this.hdpVersion = hdpVersion;
+	}
+	public String getHdpVersion() {
+		return hdpVersion;
 	}
 
 }

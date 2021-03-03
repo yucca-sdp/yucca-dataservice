@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.util;
@@ -112,6 +112,7 @@ public class ServiceUtil {
 	public static final String API_SUBTYPE_WEBSOCKET = "websocket";
 	public static final String API_SUBTYPE_MQTT = "mqtt";
 	public static final String API_SUBTYPE_ODATA = "odata";
+	public static final String API_SUBTYPE_ODATARUPAR = "odatarupar";
 	public static final String API_CODE_PREFIX_WEBSOCKET = "ws_";
 	public static final String API_CODE_PREFIX_MQTT = "mqtt_";
 	public static final Integer MAXIMUM_ERRORS_ALLOWED = 20;

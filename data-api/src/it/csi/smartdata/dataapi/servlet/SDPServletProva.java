@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package it.csi.smartdata.dataapi.servlet;
@@ -41,11 +41,12 @@ import org.apache.olingo.odata2.core.PathInfoImpl;
 import org.apache.olingo.odata2.core.exception.ODataRuntimeException;
 import org.apache.olingo.odata2.core.servlet.ODataExceptionWrapper;
 import org.apache.olingo.odata2.core.servlet.RestUtil;
+import org.apache.log4j.Logger;
 
 public class SDPServletProva extends HttpServlet {
 
 	
-
+		static Logger log = Logger.getLogger(SDPServletProva.class.getPackage().getName());
 	 
 	 
 	  private static final String HTTP_METHOD_OPTIONS = "OPTIONS";
@@ -171,7 +172,12 @@ public class SDPServletProva extends HttpServlet {
 	      PathInfoImpl pi=(PathInfoImpl)RestUtil.buildODataPathInfo(req, pathSplit);	 
 	      try {
 	    
-	      pi.setServiceRoot(new URI("https://"+SDPDataApiConfig.getInstance().getPubUri()+req.getParameter("codiceApi")+"/"));
+	     String uri = SDPDataApiConfig.getInstance().getPubUri();
+	 	 log.info("[SDPServletProva] API CONTEXT:" + req.getParameter("apiContext"));
+	     if ("odatarupar".equals(req.getParameter("apiContext"))) 
+	    		 uri = SDPDataApiConfig.getInstance().getRupUri();
+	     log.info("[SDPServletProva] uri:" + uri);
+	      pi.setServiceRoot(new URI("https://"+uri+req.getParameter("codiceApi")+"/"));
 	      } catch (Exception e ) {
 	    	  
 	      }

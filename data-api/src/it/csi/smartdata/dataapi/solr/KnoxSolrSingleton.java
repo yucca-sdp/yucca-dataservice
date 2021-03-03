@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package it.csi.smartdata.dataapi.solr;
@@ -15,7 +15,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 public class KnoxSolrSingleton {
-private SolrClient server;
+private SolrClient serverHdp2;
+private SolrClient serverHdp3;
 	
 	private KnoxSolrSingleton() {
 		
@@ -24,7 +25,7 @@ private SolrClient server;
 		{
 			CredentialsProvider provider = new BasicCredentialsProvider();
 			UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(
-					SDPDataApiConfig.instance.getSolrUsername(), SDPDataApiConfig.instance.getSolrPassword());
+					SDPDataApiConfig.instance.getSolrKnoxUsername(), SDPDataApiConfig.instance.getSolrKnoxPassword());
 			
 			provider.setCredentials(new AuthScope(AuthScope.ANY), credentials);
 			
@@ -35,8 +36,34 @@ private SolrClient server;
 		
 		
 		try {
-		server = new HttpSolrClient(SDPDataApiConfig.getInstance().getSolrUrl(),
+			serverHdp2 = new HttpSolrClient(SDPDataApiConfig.getInstance().getSolrUrl(),
 				clientBuilder.build());
+		} catch (Exception e) {
+			//TODO log
+			e.printStackTrace();
+		}
+		
+		
+		
+		
+		HttpClientBuilder clientBuilderhdp3 = HttpClientBuilder.create();
+		if (SDPDataApiConfig.instance.getSolrUsername()!=null)
+		{
+			CredentialsProvider provider = new BasicCredentialsProvider();
+			UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(
+					SDPDataApiConfig.instance.getSolrKnoxUsername(), SDPDataApiConfig.instance.getSolrKnoxPassword());
+			
+			provider.setCredentials(new AuthScope(AuthScope.ANY), credentials);
+			
+			clientBuilderhdp3.setDefaultCredentialsProvider(provider);
+		}
+		clientBuilderhdp3.setMaxConnTotal(128);
+		clientBuilderhdp3.setMaxConnPerRoute(128);
+		
+		
+		try {
+			serverHdp3 = new HttpSolrClient(SDPDataApiConfig.getInstance().getSolrHdp3Url(),
+					clientBuilderhdp3.build());
 		} catch (Exception e) {
 			//TODO log
 			e.printStackTrace();
@@ -52,7 +79,11 @@ private SolrClient server;
 	    static final KnoxSolrSingleton INSTANCE = new KnoxSolrSingleton();
 	  }
 
-	  public static SolrClient getServer() {
-		    return SingletonHolder.INSTANCE.server;
+	  public static SolrClient getServerHdp2() {
+		    return SingletonHolder.INSTANCE.serverHdp2;
+		  }
+	  
+	  public static SolrClient getServerHdp3() {
+		    return SingletonHolder.INSTANCE.serverHdp3;
 		  }
 }

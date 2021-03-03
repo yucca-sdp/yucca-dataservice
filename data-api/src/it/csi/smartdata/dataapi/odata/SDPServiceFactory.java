@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package it.csi.smartdata.dataapi.odata;
@@ -71,9 +71,11 @@ public class SDPServiceFactory extends ODataServiceFactory {
 					odc.getPathInfo().getServiceRoot().getPort()+webBaseUrl;
 				}
 				
-				
-				
-				webBaseUrl="https://"+SDPDataApiConfig.getInstance().getPubUri();
+				String context = odc.getPathInfo().getServiceRoot().getPath().split("/")[1];
+				log.info("[SDPServiceFactory] context " + context);
+				if(context.equals("apirupar"))
+					webBaseUrl="https://"+SDPDataApiConfig.getInstance().getRupUri();
+				else webBaseUrl="https://"+SDPDataApiConfig.getInstance().getPubUri();
 				
 				
 			} catch (Exception e ) {

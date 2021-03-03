@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.delegate;
@@ -38,6 +38,7 @@ import org.apache.solr.common.util.NamedList;
 import org.csi.yucca.adminapi.conf.Krb5HttpClientConfigurer;
 import org.csi.yucca.adminapi.delegate.beans.solr.SolrDatasetComponent;
 import org.csi.yucca.adminapi.delegate.beans.solr.SolrStreamComponent;
+import org.csi.yucca.adminapi.mapper.DatasetMapper;
 import org.csi.yucca.adminapi.model.ComponentJson;
 import org.csi.yucca.adminapi.model.Dataset;
 import org.csi.yucca.adminapi.model.Dettaglio;
@@ -47,6 +48,7 @@ import org.csi.yucca.adminapi.model.LicenseJson;
 import org.csi.yucca.adminapi.model.SharingTenantsJson;
 import org.csi.yucca.adminapi.model.TagJson;
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -87,6 +89,8 @@ public class SolrDelegate {
 	private SolrClient solrClient;
 
 	private static ObjectMapper mapper = new ObjectMapper();
+	@Autowired
+	private DatasetMapper datasetMapper;
 
 	public SolrDelegate() {
 		super();
@@ -145,7 +149,16 @@ public class SolrDelegate {
 
 	private SolrInputDocument createSolrDocument(DettaglioDataset dataset) throws Exception {
 		SolrInputDocument doc = createSolrDocumentFromDettaglio(dataset);
+		
+		String[] apiContexts =  null;
+		
+		//recupero gli ApiContext
+		String apiContextStr = datasetMapper.selectApiContexts(dataset.getIdDataSource(),dataset.getDatasourceversion());
+		
+		apiContexts = apiContextStr.split(",");
+		
 
+		doc.addField("apiContexts", apiContexts);
 		doc.addField("id", dataset.getDatasetcode());
 		doc.addField("entityType", new ArrayList<String>(Arrays.asList("dataset")));
 		doc.addField("name", dataset.getDatasetname());
@@ -302,6 +315,9 @@ public class SolrDelegate {
 
 	private SolrInputDocument createSolrDocumentFromDettaglio(Dettaglio dataset) throws Exception {
 		SolrInputDocument doc = new SolrInputDocument();
+		
+		//Estraggo l'apiContext del dataset
+		
 
 		doc.addField("version", dataset.getDatasourceversion());
 		doc.addField("visibility", dataset.getDataSourceVisibility());
@@ -380,7 +396,7 @@ public class SolrDelegate {
 			doc.addField("opendataLanguage", dataset.getDataSourceOpenDataLanguage());
 			// doc.addField("opendataMetaUpdateDate",
 			// dataset.opendataMetaUpdateDate );//FIXME manca il campo
-			doc.addField("opendataUpdateDate", dataset.getDataSourceOpenDataUpdateDate());
+			doc.addField("opendataUpdateDate", formatDate(dataset.getDataSourceOpenDataUpdateDate()));
 			doc.addField("opendataUpdateFrequency", dataset.getDataSourceOpenDataUpdateFrequency());
 			doc.addField("isOpendata", true);
 		}

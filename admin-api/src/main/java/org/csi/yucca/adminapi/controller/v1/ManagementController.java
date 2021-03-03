@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.controller.v1;
@@ -899,7 +899,7 @@ public class ManagementController extends YuccaController {
 				response.sendRedirect(Util.defaultIconPath(request, "dataset"));
 		} catch (Exception e) {
 			logger.info("loadDatasetIcon ERROR: " + e.getMessage());
-			e.printStackTrace();
+			//e.printStackTrace();
 			imgByte = null;
 		}
 	}

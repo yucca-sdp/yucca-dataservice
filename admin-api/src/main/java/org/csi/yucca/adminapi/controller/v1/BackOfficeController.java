@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.controller.v1;
@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.controller.YuccaController;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
+import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.request.ActionOozieRequest;
 import org.csi.yucca.adminapi.request.ActionRequest;
 import org.csi.yucca.adminapi.request.ActionfeedbackOnTenantRequest;
@@ -416,12 +417,12 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_INFO_ON_OOZIE, notes = BO_INFO_ON_OOZIE_NOTES, response = ServiceResponse.class)
 	@GetMapping("/jobs/showinfo/{oozieProcessId}")
-	public ResponseEntity<Object> infoOnOozie(@PathVariable final String oozieProcessId) {
+	public ResponseEntity<Object> infoOnOozie(@PathVariable final String oozieProcessId, @RequestParam(required = false) final String hdpVersion) {
 		logger.info("infoOnOozie");
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return datasetService.infoOnOozie(oozieProcessId);
+				return datasetService.infoOnOozie(oozieProcessId,hdpVersion);
 			}
 		}, logger);
 	}
@@ -1506,7 +1507,7 @@ public class BackOfficeController extends YuccaController {
 	 * 
 	 * @return
 	 */
-	@ApiOperation(value = BO_LOAD_DATASET_BY_DATASETCODE_DATASETVERSION, notes = BO_LOAD_DATASET_BY_DATASETCODE_DATASETVERSION_NOTES, response = BackofficeDettaglioApiResponse.class)
+	@ApiOperation(value = BO_LOAD_DATASET_BY_DATASETCODE_DATASETVERSION, notes = BO_LOAD_DATASET_BY_DATASETCODE_DATASETVERSION_NOTES, response = DettaglioDataset.class)
 	@GetMapping("/datasets/datasetCode={datasetCode}/{datasetVersion}")
 	public ResponseEntity<Object> loadDatasetByDatasetCodeDatasetVersion(@PathVariable final String datasetCode, @PathVariable final Integer datasetVersion,
 			final HttpServletRequest request) {
@@ -1527,7 +1528,7 @@ public class BackOfficeController extends YuccaController {
 	 * @param request
 	 * @return
 	 */
-	@ApiOperation(value = BO_LOAD_DATASET_BY_DATASETCODE, notes = BO_LOAD_DATASET_BY_DATASETCODE_NOTES, response = BackofficeDettaglioApiResponse.class)
+	@ApiOperation(value = BO_LOAD_DATASET_BY_DATASETCODE, notes = BO_LOAD_DATASET_BY_DATASETCODE_NOTES, response = BackofficeDettaglioStreamDatasetResponse.class)
 	@GetMapping("/datasets/datasetCode={datasetCode}")
 	public ResponseEntity<Object> loadDatasetByDatasetCode(@PathVariable final String datasetCode,
 			@RequestParam(name = "onlyInstalled", required = true) final Boolean onlyInstalled, final HttpServletRequest request) {

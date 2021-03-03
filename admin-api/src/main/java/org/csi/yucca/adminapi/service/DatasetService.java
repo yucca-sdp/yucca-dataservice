@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.service;
@@ -143,6 +143,6 @@ public interface DatasetService {
 
 	ServiceResponse actionOnOozie(ActionOozieRequest actionOozieRequest) throws BadRequestException, NotFoundException, Exception;
 	
-	ServiceResponse infoOnOozie(String oozieProcessId) throws BadRequestException, NotFoundException, Exception;
+	ServiceResponse infoOnOozie(String oozieProcessId, String hdpVersion) throws BadRequestException, NotFoundException, Exception;
 
 }

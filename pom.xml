@@ -25,6 +25,7 @@
 		<module>insertdata-api</module>
 		<module>data-api</module>
 		<module>binary-api</module>
+		<module>insert-api-kafka</module>
 	</modules>
 	
 	<dependencies>

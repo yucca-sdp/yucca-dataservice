@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.dataservice.metadataapi.util;
@@ -22,6 +22,7 @@ public class Config {
 	public static final String API_ADMIN_URL = "API_ADMIN_URL";
 	
 	public static final String EXPOSED_API_BASE_URL = "EXPOSED_API_BASE_URL";
+	public static final String EXPOSED_APIRUPAR_BASE_URL = "EXPOSED_APIRUPAR_BASE_URL";
 
 	public static final String OAUTH_BASE_URL = "OAUTH_BASE_URL";
 	public static final String OAUTH_USERNAME = "OAUTH_USERNAME";
@@ -49,6 +50,7 @@ public class Config {
 //		params.put(MANAGEMENT_BASE_URL, rb.getString(MANAGEMENT_BASE_URL));
 		params.put(API_ADMIN_URL, rb.getString(API_ADMIN_URL));
 		params.put(EXPOSED_API_BASE_URL, rb.getString(EXPOSED_API_BASE_URL));
+		params.put(EXPOSED_APIRUPAR_BASE_URL, rb.getString(EXPOSED_APIRUPAR_BASE_URL));
 		params.put(OAUTH_BASE_URL, rb.getString(OAUTH_BASE_URL));
 		params.put(OAUTH_USERNAME, rb.getString(OAUTH_USERNAME));
 		params.put(SEARCH_ENGINE_BASE_URL, rb.getString(SEARCH_ENGINE_BASE_URL));
@@ -115,6 +117,10 @@ public class Config {
 
 	public String getExposedApiBaseUrl() {
 		return params.get(EXPOSED_API_BASE_URL);
+	}
+
+	public String getExposedApiruparBaseUrl() {
+		return params.get(EXPOSED_APIRUPAR_BASE_URL);
 	}
 
 	public String getSearchEngineBaseUrl() {

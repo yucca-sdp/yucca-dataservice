@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.dataservice.binaryapi;
@@ -73,6 +73,8 @@ public class SequenceHDFSReader extends Reader {
 	
 	BackofficeDettaglioStreamDatasetResponse mdMetadata;
 	String decimalSeparator;
+	
+	String hdpVersion;
 
 	
 	/**
@@ -104,6 +106,8 @@ public class SequenceHDFSReader extends Reader {
 		this.extractpostValuesMetadata = extractpostValuesMetadata;
 		this.mdMetadata = mdMetadata;
 		this.decimalSeparator = decimalSeparator;
+		this.hdpVersion = mdMetadata.getDataset().getHdpVersion();
+		
 		
 		try {
 			firstPath();
@@ -133,7 +137,7 @@ public class SequenceHDFSReader extends Reader {
             //System.out.println("))) firstPath  p --> "+p);
             //System.out.println("))) firstPath  curMaxFields --> "+curMaxFields);
             //System.out.println("))) firstPath  maxFields --> "+maxFields);
-            csvIn = new CSVReader(new InputStreamReader(new KnoxWebHDFSConnection().open(p)),',','"',1);
+            csvIn = new CSVReader(new InputStreamReader(new KnoxWebHDFSConnection(hdpVersion).open(p)),',','"',1);
             
             nextLine(true);
         }
@@ -163,7 +167,7 @@ public class SequenceHDFSReader extends Reader {
             //System.out.println("))) nextPath  curMaxFields --> "+curMaxFields);
             //System.out.println("))) nextPath  maxFields --> "+maxFields);
 			
-			csvIn = new CSVReader(new InputStreamReader(new KnoxWebHDFSConnection().open(p)), ',', '"', 1);
+			csvIn = new CSVReader(new InputStreamReader(new KnoxWebHDFSConnection(hdpVersion).open(p)), ',', '"', 1);
 			nextLine(false);
 			
 		} else

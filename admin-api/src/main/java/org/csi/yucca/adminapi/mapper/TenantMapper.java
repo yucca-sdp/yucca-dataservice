@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.mapper;
@@ -81,7 +81,7 @@ public interface TenantMapper {
 			+ "TENANT.id_organization, id_tenant_type, id_tenant_status,  TENANT.datasolrcollectionname, TENANT.measuresolrcollectionname, "
 			+ "TENANT.mediasolrcollectionname, TENANT.socialsolrcollectionname, TENANT.dataphoenixtablename, TENANT.dataphoenixschemaname, "
 			+ "TENANT.measuresphoenixtablename, TENANT.measuresphoenixschemaname, TENANT.mediaphoenixtablename, TENANT.mediaphoenixschemaname, "
-			+ "TENANT.socialphoenixtablename, TENANT.socialphoenixschemaname, id_share_type";
+			+ "TENANT.socialphoenixtablename, TENANT.socialphoenixschemaname, id_share_type, TENANT.flagmigrated , TENANT.hdpversion";
 	
 	public static final String SELECT_TENANT_ORDER_BY =  
 			
@@ -210,6 +210,7 @@ public interface TenantMapper {
 			" TENANT.id_tenant_status, TENANT_STATUS.tenantstatuscode, TENANT_STATUS.description as tenantstatusdescription, "+
 			" TENANT.id_tenant_type, TENANT_TYPE.tenanttypecode, TENANT_TYPE.description tenanttypedescription, "+
 			" TENANT.id_share_type, TENANT.deactivationdate,SHARE_TYPE.description as sharetypedescription, "+
+			" TENANT.flagmigrated, TENANT.hdpversion, "+
 			" coalesce(TENANT.datasolrcollectionname, ORGANIZATION.datasolrcollectionname) AS datasolrcollectionname, "+
 			" coalesce(TENANT.measuresolrcollectionname, ORGANIZATION.measuresolrcollectionname) AS measuresolrcollectionname, "+
 			" coalesce(TENANT.measuresphoenixschemaname, ORGANIZATION.measuresphoenixschemaname) AS measuresphoenixschemaname, "+
@@ -240,7 +241,7 @@ public interface TenantMapper {
         @Result(property = "idOrganization",        column = "id_organization"),
         @Result(property = "idTenantStatus",        column = "id_tenant_status"),
         @Result(property = "idTenantType",          column = "id_tenant_type"),        
-        @Result(property = "idShareType",           column = "id_share_type"),
+        @Result(property = "idShareType",           column = "id_share_type"),        
         @Result(property = "idTenant",              column = "id_tenant")
       })	
 	@Select(SELECT_DETTAGLIO_TENANT) 
@@ -276,7 +277,9 @@ public interface TenantMapper {
 	
 	" TENANT.id_share_type, SHARE_TYPE.description as sharetypedescription, " + 
 	
-	" TENANT.id_tenant, TENANT.description, TENANT.name, tenantcode, usagedaysnumber, useremail, userfirstname, userlastname, usertypeauth " +
+	" TENANT.id_tenant, TENANT.description, TENANT.name, tenantcode, usagedaysnumber, useremail, userfirstname, userlastname, usertypeauth, " +
+	
+	" TENANT.flagmigrated, TENANT.hdpversion " + 
 	
 	" FROM " + TENANT_TABLE + " TENANT " + 
 	
@@ -501,7 +504,7 @@ public interface TenantMapper {
 			" measuresolrcollectionname, mediasolrcollectionname, socialsolrcollectionname, " +
 			" dataphoenixtablename, dataphoenixschemaname, measuresphoenixtablename, " +
 			" measuresphoenixschemaname, mediaphoenixtablename, mediaphoenixschemaname, " +
-			" socialphoenixtablename, socialphoenixschemaname ) " +
+			" socialphoenixtablename, socialphoenixschemaname, flagmigrated, hdpversion ) " +
 			" VALUES (<if test=\"idTenant != null\">#{idTenant},</if>#{creationdate}, #{expirationdate}, #{activationdate}, #{deactivationdate}, #{idShareType}, " +
 			" #{tenantcode}, #{name}, #{description}, #{clientkey}, #{clientsecret}, " +
 			" #{username}, #{userfirstname}, #{userlastname}, #{useremail}, #{usertypeauth}, #{idEcosystem}, " +
@@ -509,7 +512,7 @@ public interface TenantMapper {
 			" #{measuresolrcollectionname}, #{mediasolrcollectionname}, #{socialsolrcollectionname}, " +
 			" #{dataphoenixtablename}, #{dataphoenixschemaname}, #{measuresphoenixtablename}, " +
 			" #{measuresphoenixschemaname}, #{mediaphoenixtablename}, #{mediaphoenixschemaname}, " +
-			" #{socialphoenixtablename}, #{socialphoenixschemaname})";
+			" #{socialphoenixtablename}, #{socialphoenixschemaname}, #{flagmigrated}, #{hdpversion} )";
 	@Insert({"<script>",INSERT_TENANT,"</script>"})
 	@Options(useGeneratedKeys=true, keyProperty="idTenant")
 	int insertTenant(Tenant tenant);

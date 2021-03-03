@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.service.impl;
@@ -499,7 +499,7 @@ public class StreamServiceImpl implements StreamService {
 			try {
 				String removeApiResponse = PublisherDelegate.build().removeApi(httpclient, PublisherDelegate.createApiNameTopic(dettaglioStream));
 				if (dettaglioStream.getSavedata() == 1)
-					removeApiResponse = PublisherDelegate.build().removeApi(httpclient, PublisherDelegate.createApiNameOData(dataset.getDatasetcode()));
+					removeApiResponse = PublisherDelegate.build().removeApi(httpclient, PublisherDelegate.createApiNameOData(dataset.getDatasetcode(),null));
 
 				logger.info("[StreamServiceImpl::publishStream] - unpublish removeApi: " + removeApiResponse);
 

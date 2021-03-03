@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.dataservice.binaryapi.service;
@@ -443,7 +443,7 @@ public class BinaryService {
 					InputStream is;
 					try {
 
-						is = HdfsFSUtils.readFile(pathForUri + "/" + idBinary);
+						is = HdfsFSUtils.readFile(pathForUri + "/" + idBinary, api.getDettaglioStreamDatasetResponse().getDataset().getHdpVersion());
 					} catch (Exception e) {
 						LOG.error("[BinaryService::downloadFile] - Internal error during READFile", e);
 						throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -582,7 +582,7 @@ public class BinaryService {
 			String uri = null;
 			try {
 
-				uri = HdfsFSUtils.writeFile(hdfsDirectory, isForWriteFile, idBinary); // fileInputPart.getBody(InputStream.class,
+				uri = HdfsFSUtils.writeFile(hdfsDirectory, isForWriteFile, idBinary, mdBinaryDataSet.getHdpVersion()); // fileInputPart.getBody(InputStream.class,
 																						// null), idBinary);
 
 			} catch (Exception ex) {
@@ -606,7 +606,7 @@ public class BinaryService {
 			InputStream isForAnalizeMetadata = null;
 			Map<String, String> mapHS = null;
 			try {
-				isForAnalizeMetadata = HdfsFSUtils.readFile(hdfsDirectory + "/" + idBinary);
+				isForAnalizeMetadata = HdfsFSUtils.readFile(hdfsDirectory + "/" + idBinary, mdBinaryDataSet.getHdpVersion());
 				mapHS = extractMetadata(isForAnalizeMetadata);
 				binaryData.setMetadataBinary(mapHS.toString());
 				LOG.info("[BinaryService::uploadFile] - MetadataBinary = " + mapHS.toString());

@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.dataservice.insertdataapi.adminapi;
@@ -15,7 +15,6 @@ import org.apache.http.HttpStatus;
 import org.csi.yucca.adminapi.client.AdminApiClientException;
 import org.csi.yucca.adminapi.client.db.BackofficeDettaglioClientDB;
 import org.csi.yucca.adminapi.client.db.BackofficeListaClientDB;
-import org.csi.yucca.adminapi.model.TenantsType;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.TenantManagementResponse;
 import org.csi.yucca.adminapi.response.TenantResponse;
@@ -77,14 +76,22 @@ public class SDPAdminApiAccess implements SDPInsertMetadataApiAccess {
 	}
 	private BackofficeDettaglioStreamDatasetResponse getBackofficeDettaglioForDatasetCodeDatasetVersion(
 			String datasetCode, Long datasetVersion, boolean onlyInstalled) throws AdminApiClientException {
+		log.debug("[BackofficeDettaglioStreamDatasetResponse::getBackofficeDettaglioForDatasetCodeDatasetVersion]  datasetCode: " + datasetCode +
+				" datasetVersion: " + datasetVersion + "onlyInstalled: " + onlyInstalled);
+
 		BackofficeDettaglioStreamDatasetResponse dettaglio =  null;
 		if (datasetVersion == null || datasetVersion == -1) {
 			dettaglio = BackofficeDettaglioClientDB.getBackofficeDettaglioStreamDatasetByDatasetCode(
 					datasetCode, onlyInstalled, log.getName());
 		}
 		else {
-			dettaglio = BackofficeDettaglioClientDB.getBackofficeDettaglioStreamDatasetByDatasetCodeDatasetVersion(
-					datasetCode, datasetVersion.intValue(), log.getName());
+			try {
+				dettaglio = BackofficeDettaglioClientDB.getBackofficeDettaglioStreamDatasetByDatasetCodeDatasetVersion(
+						datasetCode, datasetVersion.intValue(), log.getName());
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw e;
+			}
 		}
 		return dettaglio;
 	}
@@ -119,13 +126,20 @@ public class SDPAdminApiAccess implements SDPInsertMetadataApiAccess {
 		 ArrayList<StreamInfo> infos = new ArrayList<>();
 		
 		try {
+			log.debug("[SDPAdminApiAccess::getStreamInfo]  sensor: " + sensor + " streamApplication: " + streamApplication + 
+					"tenant: " + tenant);
 			BackofficeDettaglioStreamDatasetResponse dettaglio = BackofficeDettaglioClientDB
 					.getBackofficeDettaglioStreamDatasetBySoCodeStreamCode(//SDPInsertApiConfig.getInstance().getAdminApiUrl(),
 							sensor, streamApplication,true,  log.getName());
-			
+
+			log.debug("[SDPAdminApiAccess::getStreamInfo]  dettaglio prima: " + dettaglio.getDataset().getDatasetcode());
+
 			dettaglio = checkTenantCanSendData(dettaglio, tenant);
 			dettaglio = checkIsInstalled(dettaglio);
+			
 			StreamInfo streamInfo = SDPAdminApiConverter.convertBackofficeDettaglioStreamDatasetResponseToStreamInfo(dettaglio);
+			log.debug("[SDPAdminApiAccess::getStreamInfo]  dettaglio prima: " + streamInfo.getDatasetCode());
+
 			if (streamInfo!=null)
 				infos.add(streamInfo);
 			

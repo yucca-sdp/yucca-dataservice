@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.dataservice.insertdataapi.hdfs;
@@ -16,12 +16,15 @@ import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.csi.yucca.dataservice.insertdataapi.hdfs.model.FileStatus;
 import org.csi.yucca.dataservice.insertdataapi.hdfs.model.POJOHdfs;
@@ -67,8 +70,16 @@ public class SDPInsertApiHdfsDataAccess {
 			apiBaseUrl = SDPInsertApiConfig.getInstance().getKnoxSdnetUlr() + new String(tenantOrganization).toUpperCase() + "/rawdata/" + datasetDomain + "/" + typeDirectory
 					+ "/" + subTypeDirectory;
 			log.info("apiBaseUrl => " + apiBaseUrl + "?op=LISTSTATUS");
+			
+			
+			SSLContextBuilder builder = new SSLContextBuilder();
+			builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
+			SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build());
 
-			HttpClient client = HttpClientBuilder.create().build();
+			// CloseableHttpClient client = HttpClientBuilder.create().build();
+			CloseableHttpClient client = HttpClients.custom().setSSLSocketFactory(sslsf).build();
+
+			//HttpClient client = HttpClientBuilder.create().build();
 			HttpGet httpget = new HttpGet(apiBaseUrl + "?op=LISTSTATUS");
 
 			CredentialsProvider credsProvider = new BasicCredentialsProvider();

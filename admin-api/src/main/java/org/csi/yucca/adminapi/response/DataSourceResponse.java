@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.response;
@@ -41,6 +41,8 @@ public class DataSourceResponse extends Response {
 	private DomainResponse domain;
 	private StatusResponse status;
 	private List<DataSourceGroupResponse> groups;
+	
+	private String hdpVersion;
 	
 	public DataSourceResponse() {
 		super();
@@ -242,6 +244,7 @@ public class DataSourceResponse extends Response {
 		this.requestername = dettaglioDataset.getDataSourceRequesterName();
 		this.requestersurname = dettaglioDataset.getDataSourceRequesterSurname();
 		this.externalReference = dettaglioDataset.getDataSourceExternalReference();
+		this.hdpVersion = dettaglioDataset.getHdpVersion();
 	}
 
 	private void setAllParameter(DettaglioStream dettaglioStream) throws Exception {
@@ -263,6 +266,7 @@ public class DataSourceResponse extends Response {
 		this.requestername = dettaglioStream.getDataSourceRequesterName();
 		this.requestersurname = dettaglioStream.getDataSourceRequesterSurname();
 		this.externalReference = dettaglioStream.getDataSourceExternalReference();
+		
 	}
 
 	public List<DataSourceGroupResponse> getGroups() {
@@ -273,4 +277,11 @@ public class DataSourceResponse extends Response {
 		this.groups = groups;
 	}
 
+	
+	public void setHdpVersion(String hdpVersion) {
+		this.hdpVersion = hdpVersion;
+	}
+	public String getHdpVersion() {
+		return hdpVersion;
+	}
 }

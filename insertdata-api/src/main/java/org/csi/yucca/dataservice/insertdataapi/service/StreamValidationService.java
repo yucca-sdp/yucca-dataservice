@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.dataservice.insertdataapi.service;
@@ -299,10 +299,12 @@ public class StreamValidationService {
 		// boolean indiceDaCReare=true;
 		try {
 			Long startTimeX = System.currentTimeMillis();
-			log.debug("[InsertApiLogic::insertInternalActiveMq] BEGIN Insert code ..." + topic);
+			log.info("[InsertApiLogic::insertInternalActiveMq] BEGIN Insert code ..." + topic);
 
 			TextMessage message = sessionProducerInternal.createTextMessage();
+			log.debug("[InsertApiLogic::insertInternalActiveMq] message ok ..." + message);
 			message.setText(jsonData);
+			log.debug("[InsertApiLogic::insertInternalActiveMq] message set text ..." + message);
 			Topic topicCreated = sessionProducerInternal.createTopic(topic);
 			log.info("[InsertApiLogic::insertInternalActiveMq] createTopic  Elapsed[" + (System.currentTimeMillis() - startTimeX) + "]");
 			producerInternal.send(topicCreated, message);
@@ -312,7 +314,8 @@ public class StreamValidationService {
 			e1.printStackTrace();
 			throw e1;
 		} catch (Throwable e2) {
-			log.error("[InsertApiLogic::insertManager] UnknownException, presume redelivery " + e2);
+			e2.printStackTrace();
+			log.error("[InsertApiLogic::inserimentoInActiveMq] UnknownException, presume redelivery " + e2);
 			throw new InsertApiRuntimeException(e2);
 		}
 		long startTimeX = System.currentTimeMillis();

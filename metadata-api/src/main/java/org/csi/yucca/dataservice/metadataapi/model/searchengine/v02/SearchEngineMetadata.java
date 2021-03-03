@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.dataservice.metadataapi.model.searchengine.v02;
@@ -10,6 +10,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -19,7 +20,22 @@ import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
 import com.google.gson.Gson;
 
 public class SearchEngineMetadata {
-
+	
+	/*public static void main(String[] args){
+		System.out.println("HelloWorld!");
+		String date = "Sun Oct 11 22:00:00 UTC 2020";
+		System.out.println(SearchEngineMetadata.parseDate(date));
+	
+		DateFormat parser = new SimpleDateFormat("EEE MMM dd HH:mm:ss 'UTC' yyyy");
+		parser.setTimeZone(TimeZone.getTimeZone("Etc/GMT+2"));
+		try {
+			Date result = parser.parse(date);
+			System.out.println("result:" + result);
+		} catch (Exception e){
+		    e.printStackTrace();
+		}
+					
+	}*/
 	
 	static Logger log = Logger.getLogger(SearchEngineMetadata.class);
 
@@ -95,6 +111,7 @@ public class SearchEngineMetadata {
 	private String registrationDate;
 	private String externalReference;
 	private String soType;
+	private List<String> apiContexts;
 	
 	public SearchEngineMetadata() {
 		super();
@@ -701,7 +718,8 @@ public class SearchEngineMetadata {
 		return parseDate(registrationDate);
 	}
 
-	private Date parseDate(String date) {
+	/*public static*/ private Date parseDate(String date) {
+		//log.info("DEBUG_date String =>" + date);
 		Date result = null;
 		if (date != null) {
 			try {
@@ -720,7 +738,16 @@ public class SearchEngineMetadata {
 						result = new Date(millis); 
 					} catch (Exception eq1)
 					{
-						log.warn("No Valid date:["+date+"]");
+						try {
+							DateFormat parser = new SimpleDateFormat("EEE MMM dd HH:mm:ss 'UTC' yyyy", new Locale("en", "US"));
+							parser.setTimeZone(TimeZone.getTimeZone("UTC"));
+							//parser.setTimeZone(TimeZone.getTimeZone("Etc/GMT+2"));
+							result = parser.parse(date);
+						} catch (Exception eq2)
+						{
+							eq2.printStackTrace();
+							log.warn("No Valid date:["+date+"]");
+						}
 					}
 				}
 			}
@@ -785,6 +812,18 @@ public class SearchEngineMetadata {
 	public void setOpendataUpdateFrequency(List<String> opendataUpdateFrequency) {
 		this.opendataUpdateFrequency = opendataUpdateFrequency;
 	}
+
+
+	public List<String> getApiContexts() {
+		return apiContexts;
+	}
+
+
+	public void setApiContexts(List<String> apiContexts) {
+		this.apiContexts = apiContexts;
+	}
+	
+	
 
 
 

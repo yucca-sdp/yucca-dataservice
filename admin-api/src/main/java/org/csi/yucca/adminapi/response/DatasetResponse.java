@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.response;
@@ -33,6 +33,7 @@ public class DatasetResponse extends Response {
 	private SubdomainResponse subdomain;
 	private DatasetTypeResponse datasetType;
 	private DatasetSubtypeResponse datasetSubtype;
+	private String hdpVersion;
 	
 	private Integer version;
 	private Boolean unpublished;
@@ -52,6 +53,7 @@ public class DatasetResponse extends Response {
 		this.datasetcode = dataset.getDatasetcode();
 		this.datasetname = dataset.getDatasetname();
 		this.description = dataset.getDescription();
+		this.hdpVersion = dataset.getHdpVersion();
 		
 		this.tenantManager = new TenantResponse(dataset);
 		this.organization = new OrganizationResponse(dataset);
@@ -255,6 +257,14 @@ public class DatasetResponse extends Response {
 
 	public void setIsMaxVersion(Boolean isMaxVersion) {
 		this.isMaxVersion = isMaxVersion;
+	}
+
+	public String getHdpVersion() {
+		return hdpVersion;
+	}
+
+	public void setHdpVersion(String hdpVersion) {
+		this.hdpVersion = hdpVersion;
 	}
 	
 	

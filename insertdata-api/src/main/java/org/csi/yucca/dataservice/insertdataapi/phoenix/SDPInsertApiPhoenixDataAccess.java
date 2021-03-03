@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.dataservice.insertdataapi.phoenix;
@@ -43,12 +43,13 @@ public class SDPInsertApiPhoenixDataAccess {
 	// }
 
 	private static ThreadLocal<PhoenixConnection> threadLocalConnection = new ThreadLocal<>();
+	private static ThreadLocal<PhoenixConnection> threadLocalConnectionHdp3 = new ThreadLocal<>();
 	
 	public SDPInsertApiPhoenixDataAccess() throws ClassNotFoundException {
 		// Class.forName("org.apache.phoenix.queryserver.client.Driver");
 	}
 
-	public int insertBulk(String schema, String table, DatasetBulkInsert dati) {
+	public int insertBulk(String schema, String table, DatasetBulkInsert dati,String hdpVersion) {
 		// String riga=null;
 		// DBObject dbObject = null;
 		final int batchSize = 1000;
@@ -57,19 +58,32 @@ public class SDPInsertApiPhoenixDataAccess {
 		BulkWriteResult result = null;
 		try {
 			// System.out.println("###########################################");
-			conn = threadLocalConnection.get();  
-			if (conn == null)
-			{
-				log.info("[SDPInsertApiPhoenixDataAccess::insertBulk] No connection for thread ["+Thread.currentThread().getName()+"]");
-				conn = (PhoenixConnection) DriverManager.getConnection(SDPInsertApiConfig.getInstance().getPhoenixUrl());
-				threadLocalConnection.set(conn);
-				log.info("[SDPInsertApiPhoenixDataAccess::insertBulk] Saved connection for thread["+Thread.currentThread().getName()+"]");
+			if (hdpVersion!= null && !hdpVersion.equals("")) {
+				conn = threadLocalConnectionHdp3.get();  
+				if (conn == null)
+				{
+					log.debug("[SDPInsertApiPhoenixDataAccess::insertBulk] No connection for thread ["+Thread.currentThread().getName()+"]");
+					conn = (PhoenixConnection) DriverManager.getConnection(SDPInsertApiConfig.getInstance().getPhoenixHdp3Url());
+					threadLocalConnectionHdp3.set(conn);
+					log.debug("[SDPInsertApiPhoenixDataAccess::insertBulk] Saved connection for thread["+Thread.currentThread().getName()+"]");
+				}
+				else {
+					log.debug("[SDPInsertApiPhoenixDataAccess::insertBulk] Connection found for thread ["+Thread.currentThread().getName()+"]");
+				}
+			}else {
+				conn = threadLocalConnection.get();  
+				if (conn == null)
+				{
+					log.debug("[SDPInsertApiPhoenixDataAccess::insertBulk] No connection for thread ["+Thread.currentThread().getName()+"]");
+					conn = (PhoenixConnection) DriverManager.getConnection(SDPInsertApiConfig.getInstance().getPhoenixUrl());
+					threadLocalConnection.set(conn);
+					log.debug("[SDPInsertApiPhoenixDataAccess::insertBulk] Saved connection for thread["+Thread.currentThread().getName()+"]");
+				}
+				else {
+					log.debug("[SDPInsertApiPhoenixDataAccess::insertBulk] Connection found for thread ["+Thread.currentThread().getName()+"]");
+				}
+
 			}
-			else {
-				log.info("[SDPInsertApiPhoenixDataAccess::insertBulk] Connection found for thread ["+Thread.currentThread().getName()+"]");
-			}
-			
-			
 			
 			// try {conn.commit();} catch (Exception e)
 			// {log.warn("[SDPInsertApiPhoenixDataAccess:insertBulk] Invalid Connection..... Exception catched");}

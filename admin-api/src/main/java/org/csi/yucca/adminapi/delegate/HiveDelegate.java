@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.delegate;
@@ -53,7 +53,16 @@ public class HiveDelegate {
 	private String hivePassword;
 
 	@Value("${hive.jdbc.url}")
-	private String hiveUrl;
+	private String hiveUrl;	
+	
+	@Value("${hive.hdp3.jdbc.user}")
+	private String hiveHdp3User;
+
+	@Value("${hive.hdp3.jdbc.password}")
+	private String hiveHdp3Password;
+
+	@Value("${hive.hdp3.jdbc.url}")
+	private String hiveHdp3Url;
 
 	public HiveDelegate() {
 		super();
@@ -67,9 +76,15 @@ public class HiveDelegate {
 		return hiveDelegate;
 	}
 
-	private Connection getHiveConnection() throws ClassNotFoundException, SQLException {
+	private Connection getHiveConnection(String hdpVersion) throws ClassNotFoundException, SQLException {
 		Class.forName("org.apache.hive.jdbc.HiveDriver");
-		Connection connection = DriverManager.getConnection(hiveUrl, hiveUser, hivePassword);
+		
+		Connection connection = null;
+		if (hdpVersion != null && hdpVersion != "") {			
+			connection = DriverManager.getConnection(hiveHdp3Url, hiveHdp3User, hiveHdp3Password);
+		} else {
+			connection = DriverManager.getConnection(hiveUrl, hiveUser, hivePassword);
+		}
 		return connection;
 	}
 
@@ -97,7 +112,8 @@ public class HiveDelegate {
 	public void createExternalTable(String tableName, String organizationCode, String tenantCode, BackofficeDettaglioStreamDatasetResponse datasource)
 			throws SQLException, ClassNotFoundException {
 		logger.info("[HiveDelegate::createExternalTable] START " + datasource.getDataset().getDatasetcode());
-		Connection hiveConnection = getHiveConnection();
+		
+		Connection hiveConnection = getHiveConnection(datasource.getDataset().getHdpVersion());
 		// drop existing table
 
 		try {

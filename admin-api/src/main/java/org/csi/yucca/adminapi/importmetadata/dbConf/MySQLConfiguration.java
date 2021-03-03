@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.importmetadata.dbConf;
@@ -98,7 +98,7 @@ public class MySQLConfiguration extends DatabaseConfiguration {
 	}
 
 	@Override
-	protected String getConnectionUrl(String hostname, String dbname) {
+	protected String getConnectionUrl(String hostname, String dbname,String serviceName) {
 		return "jdbc:mysql://" + hostname + "/" + dbname; // jdbc:mysql://hostname:port/dbname
 	}
 
@@ -106,5 +106,6 @@ public class MySQLConfiguration extends DatabaseConfiguration {
 	protected void initDbDriver() {
 		dbDriver = "com.mysql.jdbc.Driver";
 	}
+
 
 }

@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.model.join;
@@ -94,6 +94,10 @@ public class TenantManagement implements Serializable {
 	private String userlastname;
 
 	private String usertypeauth;
+	
+	private Boolean flagmigrated;
+	
+	private String hdpversion;
 
 	public Timestamp getCreationdate() {
 		return creationdate;
@@ -385,6 +389,24 @@ public class TenantManagement implements Serializable {
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
+	}
+	
+	
+
+	public Boolean getflagmigrated() {
+		return flagmigrated;
+	}
+
+	public void setflagmigrated(Boolean flagmigrated) {
+		this.flagmigrated = flagmigrated;
+	}
+
+	public String getHdpVersion() {
+		return hdpversion;
+	}
+
+	public void setHdpVersion(String hdpversion) {
+		this.hdpversion = hdpversion;
 	}
 
 	public Boolean getReadytools() {

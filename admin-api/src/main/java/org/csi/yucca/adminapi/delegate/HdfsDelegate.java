@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.delegate;
@@ -14,6 +14,9 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 
 import org.apache.http.HttpEntity;
@@ -28,12 +31,16 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.delegate.beans.hdfs.FileStatusContainer;
@@ -56,10 +63,16 @@ public class HdfsDelegate {
 
 	@Value("${knox.url}")
 	private String knoxUrl;
+	@Value("${knox.hdp3.url}")
+	private String knoxHdp3Url;
 	@Value("${knox.user}")
 	private String knoxUser;
+	@Value("${knox.hdp3.user}")
+	private String knoxHdp3User;
 	@Value("${knox.password}")
 	private String knoxPassword;
+	@Value("${knox.hdp3.password}")
+	private String knoxHdp3Password;
 	@Value("${hdfs.rootdir}")
 	private String hdfsRootdir;
 
@@ -79,13 +92,21 @@ public class HdfsDelegate {
 		System.setProperty("jsse.enableSNIExtension", "false");
 	}
 
-	private static CloseableHttpClient getHttpClientKnox() {
-		CloseableHttpClient client = HttpClientBuilder.create().build();
+	private static CloseableHttpClient getHttpClientKnox()
+			throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+
+		SSLContextBuilder builder = new SSLContextBuilder();
+		builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
+		SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build());
+
+		// CloseableHttpClient client = HttpClientBuilder.create().build();
+		CloseableHttpClient client = HttpClients.custom().setSSLSocketFactory(sslsf).build();
+
 		// Settata la http GET, setto le credenziali di KNOX!
 		return client;
 	}
 
-	private static CloseableHttpClient getHttpClientKnox(boolean disableRedirect) {
+	private static CloseableHttpClient getHttpClientKnox(boolean disableRedirect) throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
 
 		if (disableRedirect)
 			return HttpClientBuilder.create().disableRedirectHandling().build();
@@ -93,12 +114,18 @@ public class HdfsDelegate {
 			return getHttpClientKnox();
 	}
 
-	private HttpClientContext getHttpContext() {
+	private HttpClientContext getHttpContext(String hdpVersion) {
 		CredentialsProvider credsProvider = new BasicCredentialsProvider();
-		credsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(knoxUser, knoxPassword));
+		if (hdpVersion != null && !hdpVersion.equals("")) {
+			credsProvider.setCredentials(AuthScope.ANY,
+					new UsernamePasswordCredentials(knoxHdp3User, knoxHdp3Password));
+		} else {
+			credsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(knoxUser, knoxPassword));
+		}
 		// Add AuthCache to the execution context
 		final HttpClientContext context = HttpClientContext.create();
 		context.setCredentialsProvider(credsProvider);
+
 		return context;
 	}
 
@@ -116,8 +143,7 @@ public class HdfsDelegate {
 	}
 
 	/*
-	 * ========================================================================
-	 * GET
+	 * ======================================================================== GET
 	 * ========================================================================
 	 */
 	/**
@@ -128,11 +154,19 @@ public class HdfsDelegate {
 	 * @return
 	 * @throws MalformedURLException
 	 * @throws IOException
+	 * @throws KeyStoreException 
+	 * @throws NoSuchAlgorithmException 
+	 * @throws KeyManagementException 
 	 */
-	public String getHomeDirectory() throws MalformedURLException, IOException {
-		String spec = MessageFormat.format("/?op=GETHOMEDIRECTORY&user.name={0}", this.knoxUser);
+	public String getHomeDirectory(String hdpVersion) throws MalformedURLException, IOException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+		String spec;
+		if (hdpVersion != null && !hdpVersion.equals("")) {
+			spec = MessageFormat.format("/?op=GETHOMEDIRECTORY&user.name={0}", this.knoxHdp3User);
+		} else {
+			spec = MessageFormat.format("/?op=GETHOMEDIRECTORY&user.name={0}", this.knoxUser);
+		}
 
-		return genericGetForStringCall(spec);
+		return genericGetForStringCall(spec, hdpVersion);
 	}
 
 	/**
@@ -145,19 +179,27 @@ public class HdfsDelegate {
 	 * @param os
 	 * @throws IOException
 	 * @throws MalformedURLException
+	 * @throws KeyStoreException 
+	 * @throws NoSuchAlgorithmException 
+	 * @throws KeyManagementException 
 	 */
-	public InputStream open(String path) throws MalformedURLException, IOException {
-		String spec = MessageFormat.format("{0}?op=OPEN&user.name={1}", URLEncoder.encode(path, "UTF-8"), this.knoxUser);
+	public InputStream open(String path, String hdpVersion) throws MalformedURLException, IOException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+		String spec = MessageFormat.format("{0}?op=OPEN&user.name={1}", URLEncoder.encode(path, "UTF-8"),
+				this.knoxUser);
 
 		HttpGet get;
 		CloseableHttpClient client = null;
 		HttpResponse response = null;
 
 		try {
-			get = new HttpGet(new URL(knoxUrl + spec).toURI());
+			if (hdpVersion != null && !hdpVersion.equals("")) {
+				get = new HttpGet(new URL(knoxHdp3Url + spec).toURI());
+			} else {
+				get = new HttpGet(new URL(knoxUrl + spec).toURI());
+			}
 			get.setHeader("Content-Type", "application/octet-stream");
 			client = getHttpClientKnox();
-			response = client.execute(get, getHttpContext());
+			response = client.execute(get, getHttpContext(hdpVersion));
 
 			if (response.getStatusLine().getStatusCode() >= 400 && response.getStatusLine().getStatusCode() < 400) {
 				throw new FileNotFoundException(path);
@@ -165,7 +207,8 @@ public class HdfsDelegate {
 			if (response.getStatusLine().getStatusCode() >= 500) {
 				HttpEntity entity = response.getEntity();
 				String responseString = EntityUtils.toString(entity, "UTF-8");
-				throw new IOException("Knox excpetion [" + response.getStatusLine().getStatusCode() + "] for path [" + path + "]. Message:[" + responseString + "]");
+				throw new IOException("Knox excpetion [" + response.getStatusLine().getStatusCode() + "] for path ["
+						+ path + "]. Message:[" + responseString + "]");
 			}
 
 			return response.getEntity().getContent();
@@ -187,10 +230,14 @@ public class HdfsDelegate {
 	 * @return
 	 * @throws MalformedURLException
 	 * @throws IOException
+	 * @throws KeyStoreException 
+	 * @throws NoSuchAlgorithmException 
+	 * @throws KeyManagementException 
 	 */
-	public String getContentSummary(String path) throws MalformedURLException, IOException {
-		String spec = MessageFormat.format("{0}?op=GETCONTENTSUMMARY&user.name={1}", URLEncoder.encode(path, "UTF-8"), this.knoxUser);
-		return genericGetForStringCall(spec);
+	public String getContentSummary(String path, String hdpVersion) throws MalformedURLException, IOException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+		String spec = MessageFormat.format("{0}?op=GETCONTENTSUMMARY&user.name={1}", URLEncoder.encode(path, "UTF-8"),
+				this.knoxUser);
+		return genericGetForStringCall(spec, hdpVersion);
 
 	}
 
@@ -203,7 +250,7 @@ public class HdfsDelegate {
 	 * @return
 	 * @throws Exception
 	 */
-	public FileStatusesContainer listStatus(String path) throws Exception {
+	public FileStatusesContainer listStatus(String path, String hdpVersion) throws Exception {
 		String spec = MessageFormat.format("{0}?op=LISTSTATUS&user.name={1}", path, this.knoxUser);
 		logger.info("[KnoxWebHDFSConnection::listStatus] Knox hdfsUrl:" + knoxUrl);
 		logger.info("[KnoxWebHDFSConnection::listStatus] Knox spec:" + spec);
@@ -211,11 +258,18 @@ public class HdfsDelegate {
 
 		HttpGet get;
 		try {
-			get = new HttpGet(new URL(knoxUrl + spec).toURI());
+			logger.info("[KnoxWebHDFSConnection::listStatus] hdpVersion:" + hdpVersion);
+
+			if (hdpVersion != null && !hdpVersion.equals("")) {
+				get = new HttpGet(new URL(knoxHdp3Url + spec).toURI());
+			} else {
+				get = new HttpGet(new URL(knoxUrl + spec).toURI());
+			}
+			logger.info("[KnoxWebHDFSConnection::listStatus] get:" + get.getURI());
 		} catch (URISyntaxException e) {
 			throw new MalformedURLException(e.getMessage());
 		}
-		HttpResponse response = getHttpClientKnox().execute(get, getHttpContext());
+		HttpResponse response = getHttpClientKnox().execute(get, getHttpContext(hdpVersion));
 
 		if (response.getStatusLine().getStatusCode() >= 400 && response.getStatusLine().getStatusCode() < 500) {
 			throw new FileNotFoundException(path);
@@ -223,7 +277,8 @@ public class HdfsDelegate {
 		if (response.getStatusLine().getStatusCode() >= 500) {
 			HttpEntity entity = response.getEntity();
 			String responseString = EntityUtils.toString(entity, "UTF-8");
-			throw new Exception("Knox excpetion [" + response.getStatusLine().getStatusCode() + "] for path [" + path + "]. Message:[" + responseString + "]");
+			throw new Exception("Knox excpetion [" + response.getStatusLine().getStatusCode() + "] for path [" + path
+					+ "]. Message:[" + responseString + "]");
 		}
 
 		HttpEntity entity = response.getEntity();
@@ -248,15 +303,20 @@ public class HdfsDelegate {
 	 * @return
 	 * @throws Exception
 	 */
-	public FileStatusContainer getFileStatus(String path) throws Exception {
-		String spec = MessageFormat.format("{0}?op=GETFILESTATUS&user.name={1}", URLEncoder.encode(path, "UTF-8"), this.knoxUser);
+	public FileStatusContainer getFileStatus(String path, String hdpVersion) throws Exception {
+		String spec = MessageFormat.format("{0}?op=GETFILESTATUS&user.name={1}", URLEncoder.encode(path, "UTF-8"),
+				this.knoxUser);
 		HttpGet get;
 		try {
-			get = new HttpGet(new URL(knoxUrl + spec).toURI());
+			if (hdpVersion != null && !hdpVersion.equals("")) {
+				get = new HttpGet(new URL(knoxHdp3Url + spec).toURI());
+			} else {
+				get = new HttpGet(new URL(knoxUrl + spec).toURI());
+			}
 		} catch (URISyntaxException e) {
 			throw new MalformedURLException(e.getMessage());
 		}
-		HttpResponse response = getHttpClientKnox().execute(get, getHttpContext());
+		HttpResponse response = getHttpClientKnox().execute(get, getHttpContext(hdpVersion));
 
 		if (response.getStatusLine().getStatusCode() >= 400 && response.getStatusLine().getStatusCode() < 400) {
 			throw new FileNotFoundException(path);
@@ -264,7 +324,8 @@ public class HdfsDelegate {
 		if (response.getStatusLine().getStatusCode() >= 500) {
 			HttpEntity entity = response.getEntity();
 			String responseString = EntityUtils.toString(entity, "UTF-8");
-			throw new Exception("Knox excpetion [" + response.getStatusLine().getStatusCode() + "] for path [" + path + "]. Message:[" + responseString + "]");
+			throw new Exception("Knox excpetion [" + response.getStatusLine().getStatusCode() + "] for path [" + path
+					+ "]. Message:[" + responseString + "]");
 		}
 
 		HttpEntity entity = response.getEntity();
@@ -285,20 +346,29 @@ public class HdfsDelegate {
 	 * @return
 	 * @throws MalformedURLException
 	 * @throws IOException
+	 * @throws KeyStoreException 
+	 * @throws NoSuchAlgorithmException 
+	 * @throws KeyManagementException 
 	 */
-	public String getFileCheckSum(String path) throws MalformedURLException, IOException {
-		String spec = MessageFormat.format("{0}?op=GETFILECHECKSUM&user.name={1}", URLEncoder.encode(path, "UTF-8"), this.knoxUser);
-		return genericGetForStringCall(spec);
+	public String getFileCheckSum(String path, String hdpVersion) throws MalformedURLException, IOException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+		String spec = MessageFormat.format("{0}?op=GETFILECHECKSUM&user.name={1}", URLEncoder.encode(path, "UTF-8"),
+				this.knoxUser);
+		return genericGetForStringCall(spec, hdpVersion);
 
 	}
 
-	private String genericGetForStringCall(String spec) throws MalformedURLException, IOException, ClientProtocolException {
+	private String genericGetForStringCall(String spec, String hdpVersion)
+			throws MalformedURLException, IOException, ClientProtocolException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
 		HttpGet get;
 		CloseableHttpClient client = null;
 		try {
-			get = new HttpGet(new URL(knoxUrl + spec).toURI());
+			if (hdpVersion != null && !hdpVersion.equals("")) {
+				get = new HttpGet(new URL(knoxHdp3Url + spec).toURI());
+			} else {
+				get = new HttpGet(new URL(knoxUrl + spec).toURI());
+			}
 			client = getHttpClientKnox();
-			HttpResponse response = client.execute(get, getHttpContext());
+			HttpResponse response = client.execute(get, getHttpContext(hdpVersion));
 			return EntityUtils.toString(response.getEntity());
 		} catch (URISyntaxException e) {
 			throw new MalformedURLException(e.getMessage());
@@ -308,16 +378,22 @@ public class HdfsDelegate {
 		}
 	}
 
-	private String genericPutForStringCall(String spec) throws ParseException, Exception {
+	private String genericPutForStringCall(String spec, String hdpVersion) throws ParseException, Exception {
 		HttpPut put;
 		CloseableHttpClient client = null;
 		try {
-			put = new HttpPut(new URL(knoxUrl + spec).toURI());
+			if (hdpVersion != null && !hdpVersion.equals("")) {
+				put = new HttpPut(new URL(knoxHdp3Url + spec).toURI());
+			} else {
+				put = new HttpPut(new URL(knoxUrl + spec).toURI());
+			}
 			client = getHttpClientKnox();
-			HttpResponse response = client.execute(put, getHttpContext());
+			HttpResponse response = client.execute(put, getHttpContext(hdpVersion));
 			logger.info("[KnoxWebHDFSConnection:genericPutForStringCall] - response = " + response);
-			logger.info("[KnoxWebHDFSConnection:genericPutForStringCall] - getStatusLine = " + response.getStatusLine());
-			logger.info("[KnoxWebHDFSConnection:genericPutForStringCall] - getStatusCode = " + response.getStatusLine().getStatusCode());
+			logger.info(
+					"[KnoxWebHDFSConnection:genericPutForStringCall] - getStatusLine = " + response.getStatusLine());
+			logger.info("[KnoxWebHDFSConnection:genericPutForStringCall] - getStatusCode = "
+					+ response.getStatusLine().getStatusCode());
 			if (response.getStatusLine().getStatusCode() > 299)
 				throw new Exception(EntityUtils.toString(response.getEntity()));
 			return EntityUtils.toString(response.getEntity());
@@ -329,13 +405,18 @@ public class HdfsDelegate {
 		}
 	}
 
-	private String genericDeleteForStringCall(String spec) throws MalformedURLException, IOException, ClientProtocolException {
+	private String genericDeleteForStringCall(String spec, String hdpVersion)
+			throws MalformedURLException, IOException, ClientProtocolException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
 		HttpDelete delete;
 		CloseableHttpClient client = null;
 		try {
-			delete = new HttpDelete(new URL(knoxUrl + spec).toURI());
+			if (hdpVersion != null && !hdpVersion.equals("")) {
+				delete = new HttpDelete(new URL(knoxHdp3Url + spec).toURI());
+			} else {
+				delete = new HttpDelete(new URL(knoxUrl + spec).toURI());
+			}
 			client = getHttpClientKnox(false);
-			HttpResponse response = client.execute(delete, getHttpContext());
+			HttpResponse response = client.execute(delete, getHttpContext(hdpVersion));
 			return EntityUtils.toString(response.getEntity());
 		} catch (URISyntaxException e) {
 			throw new MalformedURLException(e.getMessage());
@@ -346,8 +427,7 @@ public class HdfsDelegate {
 	}
 
 	/*
-	 * ========================================================================
-	 * PUT
+	 * ======================================================================== PUT
 	 * ========================================================================
 	 */
 	/**
@@ -362,10 +442,14 @@ public class HdfsDelegate {
 	 * @return
 	 * @throws MalformedURLException
 	 * @throws IOException
+	 * @throws KeyStoreException 
+	 * @throws NoSuchAlgorithmException 
+	 * @throws KeyManagementException 
 	 */
-	public String create(String path, InputStream is) throws MalformedURLException, IOException {
+	public String create(String path, InputStream is, String hdpVersion) throws MalformedURLException, IOException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
 		String resp = null;
-		String spec = MessageFormat.format("{0}?op=CREATE&user.name={1}", URLEncoder.encode(path, "UTF-8"), this.knoxUser);
+		String spec = MessageFormat.format("{0}?op=CREATE&user.name={1}", URLEncoder.encode(path, "UTF-8"),
+				this.knoxUser);
 
 		logger.info("[KnoxWebHDFSConnection:create] - hdfsUrl = " + knoxUrl);
 		logger.info("[KnoxWebHDFSConnection:create] - spec = " + spec);
@@ -375,9 +459,13 @@ public class HdfsDelegate {
 		HttpPut put;
 		try {
 			logger.info("[KnoxWebHDFSConnection:create] - hdfsUrl+spec = " + knoxUrl + spec);
-			put = new HttpPut(new URL(knoxUrl + spec).toURI());
+			if (hdpVersion != null && !hdpVersion.equals("")) {
+				put = new HttpPut(new URL(knoxHdp3Url + spec).toURI());
+			} else {
+				put = new HttpPut(new URL(knoxUrl + spec).toURI());
+			}
 			client = getHttpClientKnox(true);
-			HttpResponse response = client.execute(put, getHttpContext());
+			HttpResponse response = client.execute(put, getHttpContext(hdpVersion));
 
 			if (response.getStatusLine().getStatusCode() == 307)
 				redirectUrl = response.getFirstHeader("Location").getValue();
@@ -403,7 +491,7 @@ public class HdfsDelegate {
 					put2.setEntity(myEntity);
 
 					// put2.setEntity(entity);
-					response2 = getHttpClientKnox().execute(put2, getHttpContext());
+					response2 = getHttpClientKnox().execute(put2, getHttpContext(hdpVersion));
 					resp = response2.getFirstHeader("Location").getValue();
 				} finally {
 					if (response2 != null)
@@ -424,17 +512,17 @@ public class HdfsDelegate {
 	/**
 	 * <b>MKDIRS</b>
 	 * 
-	 * curl -i -X PUT
-	 * "http://<HOST>:<PORT>/<PATH>?op=MKDIRS[&permission=<OCTAL>]"
+	 * curl -i -X PUT "http://<HOST>:<PORT>/<PATH>?op=MKDIRS[&permission=<OCTAL>]"
 	 * 
 	 * @param path
 	 * @return
 	 * @throws Exception
 	 * @throws ParseException
 	 */
-	public String mkdirs(String path) throws ParseException, Exception {
-		String spec = MessageFormat.format("{0}?op=MKDIRS&user.name={1}", URLEncoder.encode(path, "UTF-8"), this.knoxUser);
-		return genericPutForStringCall(spec);
+	public String mkdirs(String path, String hdpVersion) throws ParseException, Exception {
+		String spec = MessageFormat.format("{0}?op=MKDIRS&user.name={1}", URLEncoder.encode(path, "UTF-8"),
+				this.knoxUser);
+		return genericPutForStringCall(spec, hdpVersion);
 	}
 
 	/**
@@ -448,10 +536,10 @@ public class HdfsDelegate {
 	 * @throws Exception
 	 * @throws ParseException
 	 */
-	public String createSymLink(String srcPath, String destPath) throws ParseException, Exception {
-		String spec = MessageFormat.format("{0}?op=CREATESYMLINK&destination={1}&user.name={2}", URLEncoder.encode(srcPath, "UTF-8"), URLEncoder.encode(destPath, "UTF-8"),
-				this.knoxUser);
-		return genericPutForStringCall(spec);
+	public String createSymLink(String srcPath, String destPath, String hdpVersion) throws ParseException, Exception {
+		String spec = MessageFormat.format("{0}?op=CREATESYMLINK&destination={1}&user.name={2}",
+				URLEncoder.encode(srcPath, "UTF-8"), URLEncoder.encode(destPath, "UTF-8"), this.knoxUser);
+		return genericPutForStringCall(spec, hdpVersion);
 	}
 
 	/**
@@ -465,9 +553,10 @@ public class HdfsDelegate {
 	 * @throws Exception
 	 * @throws ParseException
 	 */
-	public String rename(String srcPath, String destPath) throws ParseException, Exception {
-		String spec = MessageFormat.format("{0}?op=RENAME&destination={1}&user.name={2}", URLEncoder.encode(srcPath, "UTF-8"), URLEncoder.encode(destPath, "UTF-8"), this.knoxUser);
-		return genericPutForStringCall(spec);
+	public String rename(String srcPath, String destPath, String hdpVersion) throws ParseException, Exception {
+		String spec = MessageFormat.format("{0}?op=RENAME&destination={1}&user.name={2}",
+				URLEncoder.encode(srcPath, "UTF-8"), URLEncoder.encode(destPath, "UTF-8"), this.knoxUser);
+		return genericPutForStringCall(spec, hdpVersion);
 	}
 
 	/**
@@ -481,10 +570,11 @@ public class HdfsDelegate {
 	 * @throws Exception
 	 * @throws ParseException
 	 */
-	public String setPermission(String path, String permission) throws ParseException, Exception {
-		String spec = MessageFormat.format("{0}?op=SETPERMISSION&permission={1}&user.name={2}", URLEncoder.encode(path, "UTF-8"), permission, this.knoxUser);
+	public String setPermission(String path, String permission, String hdpVersion) throws ParseException, Exception {
+		String spec = MessageFormat.format("{0}?op=SETPERMISSION&permission={1}&user.name={2}",
+				URLEncoder.encode(path, "UTF-8"), permission, this.knoxUser);
 		logger.info("[KnoxWebHDFSConnection:setPermission] - spec = " + spec);
-		return genericPutForStringCall(spec);
+		return genericPutForStringCall(spec, hdpVersion);
 	}
 
 	/**
@@ -498,10 +588,12 @@ public class HdfsDelegate {
 	 * @throws Exception
 	 * @throws ParseException
 	 */
-	public String setOwner(String path, String owner, String group) throws ParseException, Exception {
-		String spec = MessageFormat.format("{0}?op=SETOWNER&owner={1}&group={2}&user.name={3}", URLEncoder.encode(path, "UTF-8"), owner, group, this.knoxUser);
+	public String setOwner(String path, String owner, String group, String hdpVersion)
+			throws ParseException, Exception {
+		String spec = MessageFormat.format("{0}?op=SETOWNER&owner={1}&group={2}&user.name={3}",
+				URLEncoder.encode(path, "UTF-8"), owner, group, this.knoxUser);
 		logger.info("[setOwner] - spec = " + spec);
-		return genericPutForStringCall(spec);
+		return genericPutForStringCall(spec, hdpVersion);
 	}
 
 	/**
@@ -515,9 +607,10 @@ public class HdfsDelegate {
 	 * @throws Exception
 	 * @throws ParseException
 	 */
-	public String setReplication(String path) throws ParseException, Exception {
-		String spec = MessageFormat.format("{0}?op=SETREPLICATION&user.name={1}", URLEncoder.encode(path, "UTF-8"), this.knoxUser);
-		return genericPutForStringCall(spec);
+	public String setReplication(String path, String hdpVersion) throws ParseException, Exception {
+		String spec = MessageFormat.format("{0}?op=SETREPLICATION&user.name={1}", URLEncoder.encode(path, "UTF-8"),
+				this.knoxUser);
+		return genericPutForStringCall(spec, hdpVersion);
 	}
 
 	/**
@@ -531,19 +624,18 @@ public class HdfsDelegate {
 	 * @throws Exception
 	 * @throws ParseException
 	 */
-	public String setTimes(String path) throws ParseException, Exception {
-		String spec = MessageFormat.format("{0}?op=SETTIMES&user.name={1}", URLEncoder.encode(path, "UTF-8"), this.knoxUser);
-		return genericPutForStringCall(spec);
+	public String setTimes(String path, String hdpVersion) throws ParseException, Exception {
+		String spec = MessageFormat.format("{0}?op=SETTIMES&user.name={1}", URLEncoder.encode(path, "UTF-8"),
+				this.knoxUser);
+		return genericPutForStringCall(spec, hdpVersion);
 	}
 
 	/*
-	 * ========================================================================
-	 * POST
+	 * ======================================================================== POST
 	 * ========================================================================
 	 */
 	/**
-	 * curl -i -X POST
-	 * "http://<HOST>:<PORT>/<PATH>?op=APPEND[&buffersize=<INT>]"
+	 * curl -i -X POST "http://<HOST>:<PORT>/<PATH>?op=APPEND[&buffersize=<INT>]"
 	 * 
 	 * @param path
 	 * @param is
@@ -607,14 +699,20 @@ public class HdfsDelegate {
 	 * @return
 	 * @throws IOException
 	 * @throws MalformedURLException
+	 * @throws KeyStoreException 
+	 * @throws NoSuchAlgorithmException 
+	 * @throws KeyManagementException 
 	 */
-	public String delete(String path) throws MalformedURLException, IOException {
-		String spec = MessageFormat.format("{0}?op=DELETE&user.name={1}", URLEncoder.encode(path, "UTF-8"), this.knoxUser);
-		return genericDeleteForStringCall(spec);
+	public String delete(String path, String hdpVersion) throws MalformedURLException, IOException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+		String spec = MessageFormat.format("{0}?op=DELETE&user.name={1}", URLEncoder.encode(path, "UTF-8"),
+				this.knoxUser);
+		return genericDeleteForStringCall(spec, hdpVersion);
 	}
 
-	private String getFinalDir(String subType, String organizationCode, String dataDomain, String codSubDomain, String vESlug) {
-		String finalDir = "/" + hdfsRootdir + "/" + organizationCode.toUpperCase() + "/rawdata/" + dataDomain.toUpperCase() + "/";
+	private String getFinalDir(String subType, String organizationCode, String dataDomain, String codSubDomain,
+			String vESlug) {
+		String finalDir = "/" + hdfsRootdir + "/" + organizationCode.toUpperCase() + "/rawdata/"
+				+ dataDomain.toUpperCase() + "/";
 		if ("bulkDataset".equals(subType))
 			finalDir += "db_" + codSubDomain.toUpperCase();
 		else
@@ -630,12 +728,16 @@ public class HdfsDelegate {
 	}
 
 	public String getHdfsDir(String organizationCode, BackofficeDettaglioStreamDatasetResponse datasource) {
-		String vESlug = datasource.getStream() != null && datasource.getStream().getSmartobject() != null ? datasource.getStream().getSmartobject().getSlug() : null;
+		String vESlug = datasource.getStream() != null && datasource.getStream().getSmartobject() != null
+				? datasource.getStream().getSmartobject().getSlug()
+				: null;
 		String datasetSubtype = datasource.getDataset().getDatasetSubtype().getDatasetSubtype();
 		String streamCode = datasource.getStream() != null ? datasource.getStream().getStreamcode() : null;
 
-		logger.info("[HdfsDelegate::getHdfsDir] vESlug" + knoxUrl + " - datasetSubtype " + datasetSubtype + " - datasetcode: " + datasource.getDataset().getDatasetcode());
-		return getFinalDir(datasetSubtype, organizationCode, datasource.getDomain().getDomaincode(), datasource.getSubdomain().getSubdomaincode(), vESlug) + "/"
+		logger.info("[HdfsDelegate::getHdfsDir] vESlug - datasetSubtype " + datasetSubtype
+				+ " - datasetcode: " + datasource.getDataset().getDatasetcode());
+		return getFinalDir(datasetSubtype, organizationCode, datasource.getDomain().getDomaincode(),
+				datasource.getSubdomain().getSubdomaincode(), vESlug) + "/"
 				+ getLastDir(datasetSubtype, datasource.getDataset().getDatasetcode(), streamCode);
 	}
 

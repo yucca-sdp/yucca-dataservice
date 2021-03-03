@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata;
@@ -398,7 +398,10 @@ public class MetadataDelegate {
 		}
 		if (resp != null)
 			resultString = (String) resp.get("response");
-
+		
+		log.info("DEBUG:" + resultString); // TODO rimuovere
+		System.out.println("DEBUG:" + resultString); // TODO rimuovere
+		
 		SearchEngineResult searchEngineResult = SearchEngineResult.fromJson(resultString);
 
 		if (searchEngineResult.getResponse().getDocs() == null || searchEngineResult.getResponse().getDocs().size() == 0) {

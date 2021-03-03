@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.fabric;
@@ -14,8 +14,11 @@ import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.http.HttpException;
+import org.apache.http.NameValuePair;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.log4j.Logger;
+import org.csi.yucca.adminapi.delegate.HttpDelegate;
 import org.csi.yucca.adminapi.delegate.IdentityServerDelegate;
 import org.csi.yucca.adminapi.delegate.RShellDelegate;
 import org.csi.yucca.adminapi.delegate.StoreDelegate;
@@ -52,6 +55,8 @@ public class TenantFabric {
 	private static TenantFabric tenantFabric;
 	//private TenantService tenantService;
 	
+	private static HttpDelegate httpDelegate;
+	
 	
 //	@Value("${identityServer.user}")
 //	private String identityServerSecuser;
@@ -70,6 +75,9 @@ public class TenantFabric {
 
 	@Value("${rsh.tenant.env}")
 	private String rshEnv;
+	
+	@Value("${kafka.api.url}")
+	private String kafkaApiUrl;
 	
 
 	private TenantService tenantService;
@@ -372,6 +380,20 @@ public class TenantFabric {
 			else
 				fabricResponse.addLogInfo("STEP 11 add role to User - User " + tenant.getUsername() + " not exist");
 
+			
+			//call kakfa api
+			
+			String url = kafkaApiUrl + "yucca/topics/" + tenant.getTenantcode();
+		
+			try {
+				String result = HttpDelegate.makeHttpPost(null, url, null, null, null, null, null);
+				logger.info("[TenantFabric::execInstallation] call api kafka " + tenantcode + " response " + result);
+				fabricResponse.addLogInfo("STEP 12 - call kafka api for tenantcode " + tenantcode + " ok ");
+			}
+			catch (Exception e) {
+				throw new FabricException ("Error in call api kafka" + e.getMessage());
+				
+			}
 			
 //			
 //			if (!existingRoles.contains(tenantcode + "_subscriber")) { // TODO 

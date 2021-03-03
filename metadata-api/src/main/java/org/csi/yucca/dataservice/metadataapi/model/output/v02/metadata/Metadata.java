@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.dataservice.metadataapi.model.output.v02.metadata;
@@ -80,6 +80,7 @@ public class Metadata {
 	private Opendata opendata;
 	private DCat dcat;
 	private List<Component> components;
+	private List<String> apiContexts;
 
 	public void setAuthor(String author) {
 		this.author = author;
@@ -392,6 +393,16 @@ public class Metadata {
 	public void setOrganizationDescription(String organizationDescription) {
 		this.organizationDescription = organizationDescription;
 	}
+	
+	
+
+	public List<String> getApiContexts() {
+		return apiContexts;
+	}
+
+	public void setApiContexts(List<String> apiContexts) {
+		this.apiContexts = apiContexts;
+	}
 
 	private void addComponent(Component component) {
 		if (this.components == null)
@@ -467,10 +478,10 @@ public class Metadata {
 		ckanDataset.setName(getCkanPackageId());
 		if (getStream() != null) {
 			ckanDataset.setTitle(getName() + " - " + getTenantName());
-			ckanDataset.setNotes(getDescription() + " - " + getTenantName() + " - " + getStream().getSmartobject().getDescription());
+			ckanDataset.setNotes(getDescription() + " - " + getStream().getSmartobject().getDescription());
 		} else {
 			ckanDataset.setTitle(getName());
-			ckanDataset.setNotes(getDescription() + " - " + getTenantName());
+			ckanDataset.setNotes(getDescription());
 		}
 		ckanDataset.setVersion(getVersion());
 
@@ -478,10 +489,11 @@ public class Metadata {
 
 		ckanDataset.setUrl(metadataUrl);
 
-		String exposedApiBaseUrlDatasetCode = Config.getInstance().getExposedApiBaseUrl() + getDataset().getCode();
-		
+		String exposedApiBaseUrlDatasetCode = Config.getInstance().getExposedApiBaseUrl() + getDataset().getCode() ;
+		if(getApiContexts()!=null && getApiContexts().size()>0 && getApiContexts().get(0).equals("odatarupar"))
+			exposedApiBaseUrlDatasetCode = Config.getInstance().getExposedApiruparBaseUrl() + getDataset().getCode() ;
 		// resources API ODATA
-		addResourceApiOdataUrl(ckanDataset, exposedApiBaseUrlDatasetCode);
+		addResourceApiOdataUrl(ckanDataset, exposedApiBaseUrlDatasetCode +"/");
 		
 		// Resources Csv download url
 		addResourceCsvDownloadUrl(ckanDataset, exposedApiBaseUrlDatasetCode);		
@@ -494,6 +506,8 @@ public class Metadata {
 			extras.setTopic(getDomain());
 			extras.setHidden_field(getDomain());
 		}
+		
+		extras.setExternal_reference(getExternalreference());
 
 		if (getOpendata() != null) {
 			ckanDataset.setAuthor(getOpendata().getAuthor());
@@ -616,7 +630,14 @@ public class Metadata {
 		metadata.setRegistrationDate(searchEngineItem.parseRegistrationDate());
 		metadata.setRegistrationDateMillis(searchEngineItem.getRegistrationDateMillis());
 		metadata.setExternalreference(searchEngineItem.getExternalReference());
-
+			
+		if(searchEngineItem.getApiContexts()!=null)
+			metadata.setApiContexts(searchEngineItem.getApiContexts());
+		else {
+			List<String> defaultApiContext = new ArrayList<String>();
+			defaultApiContext.add("odata");
+			metadata.setApiContexts(defaultApiContext);
+		}
 		if (searchEngineItem.getTagCode() != null) {
 			metadata.setTagCodes(searchEngineItem.getTagCode());
 			// metadata.setTags(I18nDelegate.translateMulti(metadata.getTagCodes(),

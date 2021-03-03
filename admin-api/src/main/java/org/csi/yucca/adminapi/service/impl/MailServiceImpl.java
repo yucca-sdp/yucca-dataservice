@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.service.impl;
@@ -23,6 +23,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
@@ -50,6 +51,8 @@ public class MailServiceImpl implements MailService {
 
 	@Override
 	public void sendEmail(EmailInfo emailInfo) {
+		
+		logger.info("[MailServiceImpl::sendEmail] - protocol " + ((JavaMailSenderImpl)mailSender).getProtocol());
 
 		MimeMessagePreparator preparator = getMessagePreparator(emailInfo);
 
@@ -103,7 +106,7 @@ public class MailServiceImpl implements MailService {
 	@Override
 	public void sendOpendataCreationInformative(PostDatasetResponse response, String dataSetStoreLink, String tenantCode, String user) {
 		
-		logger.info("[DatasetServiceImpl::sendOpendataCreationInformative] START ");
+		logger.info("[MailServiceImpl::sendOpendataCreationInformative] START ");
 		String datasetCode = response.getDatasetcode();
 		StringBuilder emailMessage = new StringBuilder().append("E' stato creato o aggiornato il dataset pubblico" + datasetCode  + "\n\n" +  
 				"Dettaglio: ").append("\n")

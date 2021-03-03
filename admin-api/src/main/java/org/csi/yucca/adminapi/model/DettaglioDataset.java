@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.model;
@@ -15,7 +15,7 @@ public class DettaglioDataset extends Dataset {
 	private String solrcollectionname;
 	private String phoenixtablename;
 	private String phoenixschemaname;
-
+	
 	public String getJdbcdbschema() {
 		return jdbcdbschema;
 	}

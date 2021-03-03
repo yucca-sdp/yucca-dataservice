@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.response;
@@ -59,6 +59,10 @@ public class TenantManagementResponse extends Response{
 
 	private String expirationdate;
 	
+	private Boolean flagmigrated;
+	
+	private String hdpversion;
+	
 	public TenantManagementResponse() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -96,6 +100,8 @@ public class TenantManagementResponse extends Response{
 		this.usertypeauth = tenantManagement.getUsertypeauth();
 		this.creationdate = Util.dateString(tenantManagement.getCreationdate());
 		this.expirationdate = Util.dateString(tenantManagement.getExpirationdate());
+		this.flagmigrated = tenantManagement.getflagmigrated();
+		this.hdpversion =  tenantManagement.getHdpVersion();
 	}
 
 	public String getCreationdate() {
@@ -273,6 +279,24 @@ public class TenantManagementResponse extends Response{
 	public void setUsertypeauth(String usertypeauth) {
 		this.usertypeauth = usertypeauth;
 	}
+
+	public Boolean getFlagmigrated() {
+		return flagmigrated;
+	}
+
+	public void setFlagmigrated(Boolean flagmigrated) {
+		this.flagmigrated = flagmigrated;
+	}
+
+	public String getHdpversion() {
+		return hdpversion;
+	}
+
+	public void setHdpversion(String hdpversion) {
+		this.hdpversion = hdpversion;
+	}
+	
+	
 	
 	
 	

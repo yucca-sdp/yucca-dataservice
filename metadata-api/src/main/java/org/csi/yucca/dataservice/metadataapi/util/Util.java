@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.dataservice.metadataapi.util;
@@ -84,7 +84,7 @@ public class Util {
 		String formattedDate = null;
 		if (date != null) {
 			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-			df.setTimeZone(TimeZone.getTimeZone("UTC"));
+			//df.setTimeZone(TimeZone.getTimeZone("UTC"));
 			formattedDate = df.format(date);
 		}
 		return formattedDate;

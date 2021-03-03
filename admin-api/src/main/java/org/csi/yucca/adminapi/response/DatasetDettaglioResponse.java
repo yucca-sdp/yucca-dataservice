@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.response;
@@ -35,6 +35,7 @@ public class DatasetDettaglioResponse {
 	private String jdbctablename;
 	private String importedfiles;
 	private String jdbcdbschema;
+	private String hdpVersion;
 
 	public DatasetDettaglioResponse() {
 		super();
@@ -64,6 +65,7 @@ public class DatasetDettaglioResponse {
 		this.jdbctablename = dettaglioDataset.getJdbctablename();
 		this.importedfiles = dettaglioDataset.getImportedfiles();
 		this.jdbcdbschema = dettaglioDataset.getJdbcdbschema();
+		this.setHdpVersion(dettaglioDataset.getHdpVersion());
 	}
 
 	public String getStartingestiondate() {
@@ -232,6 +234,14 @@ public class DatasetDettaglioResponse {
 
 	public void setJdbcdbschema(String jdbcdbschema) {
 		this.jdbcdbschema = jdbcdbschema;
+	}
+
+	public String getHdpVersion() {
+		return hdpVersion;
+	}
+
+	public void setHdpVersion(String hdpVersion) {
+		this.hdpVersion = hdpVersion;
 	}
 
 }

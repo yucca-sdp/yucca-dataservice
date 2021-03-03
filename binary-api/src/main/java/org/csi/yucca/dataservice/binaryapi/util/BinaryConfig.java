@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.dataservice.binaryapi.util;
@@ -26,6 +26,10 @@ public class BinaryConfig {
 	public static final String KNOX_PWD = "KNOX_PWD";
 	public static final String KNOX_USER = "KNOX_USER";
 	public static final String KNOX_GROUP = "KNOX_GROUP";
+	public static final String KNOX_URL_HDP3 = "KNOX_URL_HDP3";
+	public static final String KNOX_PWD_HDP3 = "KNOX_PWD_HDP3";
+	public static final String KNOX_USER_HDP3 = "KNOX_USER_HDP3";
+	public static final String KNOX_GROUP_HDP3 = "KNOX_GROUP_HDP3";
 	public static final String HDFS_LIBRARY = "HDFS_LIBRARY";
 	public static final String API_ADMIN_SERVICES_URL = "API_ADMIN_SERVICES_URL";
 	public static final String DATA_INSERT_BASE_URL = "DATA_INSERT_BASE_URL";
@@ -55,6 +59,11 @@ public class BinaryConfig {
 		params.put(KNOX_PWD, rbSecret.getString(KNOX_PWD));
 		params.put(KNOX_USER, rbSecret.getString(KNOX_USER));
 		params.put(KNOX_GROUP, rbSecret.getString(KNOX_GROUP));
+		
+		params.put(KNOX_URL_HDP3, rbSecret.getString(KNOX_URL_HDP3));
+		params.put(KNOX_PWD_HDP3, rbSecret.getString(KNOX_PWD_HDP3));
+		params.put(KNOX_USER_HDP3, rbSecret.getString(KNOX_USER_HDP3));
+		params.put(KNOX_GROUP_HDP3, rbSecret.getString(KNOX_GROUP_HDP3));
 	}
 
 	public static BinaryConfig getInstance() {
@@ -112,6 +121,22 @@ public class BinaryConfig {
 
 	public  String getKnoxGroup() {
 		return params.get(KNOX_GROUP);
+	}
+	
+	public  String getKnoxUrlHdp3() {
+		return params.get(KNOX_URL_HDP3);
+	}
+
+	public  String getKnoxPwdHdp3() {
+		return params.get(KNOX_PWD_HDP3);
+	}
+
+	public  String getKnoxUserHdp3() {
+		return params.get(KNOX_USER_HDP3);
+	}
+
+	public  String getKnoxGroupHdp3() {
+		return params.get(KNOX_GROUP_HDP3);
 	}
 
 	public  String getHdfsLibrary() {

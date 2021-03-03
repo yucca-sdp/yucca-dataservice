@@ -1,12 +1,13 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.delegate;
 
 import java.io.IOException;
+import org.csi.yucca.adminapi.util.DatasetApi;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -54,12 +55,19 @@ public class PublisherDelegate {
 	private String responseOk;
 	@Value("${publisher.baseApiUrl}")
 	private String baseApiUrl;
+	@Value("${publisher.baseApiRuparUrl}")
+	private String baseApiRuparUrl;
+	@Value("${publisher.baseSearchApiUrl}")
+	private String baseSearchApiUrl ;
+	@Value("${publisher.baseSearchApiRuparUrl}")
+	private String baseSearchApiRuparUrl ;
 	@Value("${store.user}")
 	private String publisherUser;
 	@Value("${store.password}")
 	private String publisherPassword;
 
 	private ObjectMapper mapper = new ObjectMapper();
+
 
 	public PublisherDelegate() {
 		super();
@@ -98,8 +106,10 @@ public class PublisherDelegate {
 
 	}
 
-	public static final String createApiNameOData(String datasetCode) {
-		return datasetCode + "_odata";
+	public static final String createApiNameOData(String datasetCode, String api) {
+		if (api != null)
+			return datasetCode + "_" + api;
+		else return datasetCode + "_odata";
 	}
 
 	public static final String createApiNameTopic(DettaglioStream dettaglioStream) {
@@ -123,7 +133,7 @@ public class PublisherDelegate {
 		String apiContext = "/api/topic/output." + stream.getTenantCode() + "." + stream.getSmartObjectCode() + "_" + stream.getStreamcode();
 		String endpoint = "http://api.smartdatanet.it/dammiInfo";
 		return addApi(httpclient, addApiParams, apiName, endpoint, apiContext, stream.getDataSourceVisibility(), stream.getSharingTenant(), stream.getDomDomainCode(),
-				stream.getTags(), stream.getDataSourceIcon(), stream.getLicense(), stream.getDataSourceDisclaimer(), stream.getTenantCode(), stream.getTenantName());
+				stream.getTags(), stream.getDataSourceIcon(), stream.getLicense(), stream.getDataSourceDisclaimer(), stream.getTenantCode(), stream.getTenantName(),null);
 	}
 
 	public String addApi(CloseableHttpClient httpclient, DettaglioStream stream, String datasetcode) throws HttpException, IOException, Exception {
@@ -139,15 +149,15 @@ public class PublisherDelegate {
 		addApiParams.add(new BasicNameValuePair("virtualEntityDescription", stream.getSmartObjectDescription() != null ? Util.safeSubstring(stream.getSmartObjectDescription(),
 				API_FIELD_MAX_LENGTH) : ""));
 
-		String apiName = createApiNameOData(datasetcode);
+		String apiName = createApiNameOData(datasetcode,null);
 		String endpoint = baseApiUrl + datasetcode;
 		String apiContext = "/api/" + datasetcode;
 		return addApi(httpclient, addApiParams, apiName, endpoint, apiContext, stream.getDataSourceVisibility(), stream.getSharingTenant(), stream.getDomDomainCode(),
-				stream.getTags(), stream.getDataSourceIcon(), stream.getLicense(), stream.getDataSourceDisclaimer(), stream.getTenantCode(), stream.getTenantName());
+				stream.getTags(), stream.getDataSourceIcon(), stream.getLicense(), stream.getDataSourceDisclaimer(), stream.getTenantCode(), stream.getTenantName(),null);
 
 	}
 
-	public String addApi(CloseableHttpClient httpclient, DettaglioDataset dataset) throws HttpException, IOException, Exception {
+	public String addApi(CloseableHttpClient httpclient, DettaglioDataset dataset, DatasetApi api) throws HttpException, IOException, Exception {
 		logger.debug("[PublisherDelegate::addApi] DATASET");
 		List<NameValuePair> addApiParams = new LinkedList<NameValuePair>();
 
@@ -158,16 +168,43 @@ public class PublisherDelegate {
 		addApiParams.add(new BasicNameValuePair("virtualEntityName", ""));
 		addApiParams.add(new BasicNameValuePair("virtualEntityDescription", ""));
 
-		String apiName = createApiNameOData(dataset.getDatasetcode());
-		String endpoint = baseApiUrl + dataset.getDatasetcode();
-		String apiContext = "/api/" + dataset.getDatasetcode();
+		String apiName = createApiNameOData(dataset.getDatasetcode(), api.name());
+		String endpoint = "";
+		String apiContext = "";
+		
+		//api odata
+		if (api != null) {
+			if (api.name().equals("odata")) {
+					endpoint = baseApiUrl + dataset.getDatasetcode();
+			}
+			else if ( api.name().equals("odatarupar")) {
+				endpoint = baseApiRuparUrl + dataset.getDatasetcode();
+			}
+			
+			//api search
+			else if (api.name().equals("search")) {
+				endpoint = baseSearchApiUrl + dataset.getDatasetcode();
+			}
+			
+			else if (api.name().equals("searchrupar")){
+				endpoint = baseSearchApiRuparUrl + dataset.getDatasetcode();
+			}
+			
+			apiContext = "/"+ api.apicontext() + "/" + dataset.getDatasetcode();
+		}
+		
+		else {
+			endpoint = baseApiUrl + dataset.getDatasetcode();
+			apiContext = "/api/"  + dataset.getDatasetcode();
+		}
+		
 		return addApi(httpclient, addApiParams, apiName, endpoint, apiContext, dataset.getDataSourceVisibility(), dataset.getSharingTenant(), dataset.getDomDomainCode(),
-				dataset.getTags(), dataset.getDataSourceIcon(), dataset.getLicense(), dataset.getDataSourceDisclaimer(), dataset.getTenantCode(), dataset.getTenantName());
+				dataset.getTags(), dataset.getDataSourceIcon(), dataset.getLicense(), dataset.getDataSourceDisclaimer(), dataset.getTenantCode(), dataset.getTenantName(), api);
 
 	}
 
 	private String addApi(CloseableHttpClient httpclient, List<NameValuePair> addApiParams, String apiName, String endpoint, String apiContext, String visibility,
-			String sharingTenant, String domainCode, String tags, String icon, String license, String disclaimer, String tenantcode, String tenantname) throws Exception {
+			String sharingTenant, String domainCode, String tags, String icon, String license, String disclaimer, String tenantcode, String tenantname,DatasetApi api) throws Exception {
 
 		if ("public".equals(visibility)) {
 			addApiParams.add(new BasicNameValuePair("visibility", "public"));
@@ -245,7 +282,10 @@ public class PublisherDelegate {
 		addApiParams.add(new BasicNameValuePair("techOwnerMail", "tecnikus@csi.it"));
 		addApiParams.add(new BasicNameValuePair("tiersCollection", "Unlimited"));
 		addApiParams.add(new BasicNameValuePair("resourceCount", "0"));
-		addApiParams.add(new BasicNameValuePair("resourceMethod-0", "GET"));
+		if(api != null)
+			addApiParams.add(new BasicNameValuePair("resourceMethod-0", api.method()));
+		else 
+			addApiParams.add(new BasicNameValuePair("resourceMethod-0", "GET"));
 		addApiParams.add(new BasicNameValuePair("resourceMethodThrottlingTier-0", "Unlimited"));
 		addApiParams.add(new BasicNameValuePair("uriTemplate-0", "/*"));
 		addApiParams.add(new BasicNameValuePair("transports.1", "http"));

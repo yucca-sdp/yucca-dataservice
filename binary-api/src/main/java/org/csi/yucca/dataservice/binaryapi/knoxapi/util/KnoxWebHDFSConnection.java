@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.dataservice.binaryapi.knoxapi.util;
@@ -80,9 +80,11 @@ public class KnoxWebHDFSConnection {
 
 	protected static final Logger logger = LoggerFactory.getLogger(KnoxWebHDFSConnection.class);
 
-	private String httpfsUrl = BinaryConfig.getInstance().getKnoxUrl();
-	private String principal = BinaryConfig.getInstance().getKnoxUser();
-	private String password = BinaryConfig.getInstance().getKnoxPwd();
+	private String httpfsUrl;
+	private String principal;
+	private String password;
+	
+	private String hdpVersion;
 
 	static {
 		System.setProperty("jsse.enableSNIExtension", "false");
@@ -102,23 +104,39 @@ public class KnoxWebHDFSConnection {
 			return getHttpClientKnox();
 	}
 	
-	private static HttpClientContext getHttpContext(){
+	private static HttpClientContext getHttpContext(String hdpVersion){
 		CredentialsProvider credsProvider = new BasicCredentialsProvider();
-		credsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(BinaryConfig.getInstance().getKnoxUser(), BinaryConfig.getInstance().getKnoxPwd()));
+		if(hdpVersion != null && !hdpVersion.equals("")) { // if hdpVersion 3
+			credsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(BinaryConfig.getInstance().getKnoxUserHdp3(), BinaryConfig.getInstance().getKnoxPwdHdp3()));
+		} else { // if hdpVersion 2
+			credsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(BinaryConfig.getInstance().getKnoxUser(), BinaryConfig.getInstance().getKnoxPwd()));
+		}
 		// Add AuthCache to the execution context
 		final HttpClientContext context = HttpClientContext.create();
 		context.setCredentialsProvider(credsProvider);
 		return context;
-	}
-	
+	}	
 
-	public KnoxWebHDFSConnection() {
+	public KnoxWebHDFSConnection(String hdpVersion) {
+		this.hdpVersion = hdpVersion;
+		
+		if(hdpVersion != null && !hdpVersion.equals("")){ // if hdpVersion 3
+			this.httpfsUrl = BinaryConfig.getInstance().getKnoxUrlHdp3();
+			this.principal = BinaryConfig.getInstance().getKnoxUserHdp3();
+			this.password = BinaryConfig.getInstance().getKnoxPwdHdp3();
+		} else { // if hdpVersion 2
+			this.httpfsUrl = BinaryConfig.getInstance().getKnoxUrl();
+			this.principal = BinaryConfig.getInstance().getKnoxUser();
+			this.password = BinaryConfig.getInstance().getKnoxPwd();
+		}
 	}
 
-	public KnoxWebHDFSConnection(String httpfsUrl, String principal, String password) {
+	public KnoxWebHDFSConnection(String httpfsUrl, String principal, String password, String hdpVersion) {
 		this.httpfsUrl = httpfsUrl;
 		this.principal = principal;
 		this.password = password;
+		
+		this.hdpVersion = hdpVersion;
 	}
 
 	protected static long copy(InputStream input, OutputStream result) throws IOException {
@@ -178,7 +196,7 @@ public class KnoxWebHDFSConnection {
 			get = new HttpGet(new URL(httpfsUrl+spec).toURI());
 			get.setHeader("Content-Type", "application/octet-stream");
 			client = getHttpClientKnox();
-			response = client.execute(get,getHttpContext());
+			response = client.execute(get,getHttpContext(this.hdpVersion));
 			
 			if (response.getStatusLine().getStatusCode()>=400 && response.getStatusLine().getStatusCode()<400)
 			{
@@ -240,7 +258,7 @@ public class KnoxWebHDFSConnection {
 		} catch (URISyntaxException e) {
 			throw new MalformedURLException(e.getMessage());
 		}
-		HttpResponse response = getHttpClientKnox().execute(get,getHttpContext());
+		HttpResponse response = getHttpClientKnox().execute(get,getHttpContext(this.hdpVersion));
 		
 		if (response.getStatusLine().getStatusCode()>=400 && response.getStatusLine().getStatusCode()<400)
 		{
@@ -285,7 +303,7 @@ public class KnoxWebHDFSConnection {
 		} catch (URISyntaxException e) {
 			throw new MalformedURLException(e.getMessage());
 		}
-		HttpResponse response = getHttpClientKnox().execute(get,getHttpContext());
+		HttpResponse response = getHttpClientKnox().execute(get,getHttpContext(this.hdpVersion));
 		
 		if (response.getStatusLine().getStatusCode()>=400 && response.getStatusLine().getStatusCode()<400)
 		{
@@ -333,7 +351,7 @@ public class KnoxWebHDFSConnection {
 		try {
 			get = new HttpGet(new URL(httpfsUrl+spec).toURI());
 			client = getHttpClientKnox();
-			HttpResponse response = client.execute(get,getHttpContext());
+			HttpResponse response = client.execute(get,getHttpContext(this.hdpVersion));
 			return EntityUtils.toString(response.getEntity());
 		} catch (URISyntaxException e) {
 			throw new MalformedURLException(e.getMessage());
@@ -350,7 +368,7 @@ public class KnoxWebHDFSConnection {
 		try {
 			put = new HttpPut(new URL(httpfsUrl+spec).toURI());
 			client = getHttpClientKnox();
-			HttpResponse response = client.execute(put,getHttpContext());
+			HttpResponse response = client.execute(put,getHttpContext(this.hdpVersion));
 			logger.info("[KnoxWebHDFSConnection:genericPutForStringCall] - response = " + response);
 			logger.info("[KnoxWebHDFSConnection:genericPutForStringCall] - getStatusLine = " + response.getStatusLine());
 			logger.info("[KnoxWebHDFSConnection:genericPutForStringCall] - getStatusCode = " + response.getStatusLine().getStatusCode());
@@ -372,7 +390,7 @@ public class KnoxWebHDFSConnection {
 		try {
 			delete = new HttpDelete(new URL(httpfsUrl+spec).toURI());
 			client = getHttpClientKnox(false);
-			HttpResponse response = client.execute(delete,getHttpContext());
+			HttpResponse response = client.execute(delete,getHttpContext(this.hdpVersion));
 			return EntityUtils.toString(response.getEntity());
 		} catch (URISyntaxException e) {
 			throw new MalformedURLException(e.getMessage());
@@ -414,7 +432,7 @@ public class KnoxWebHDFSConnection {
 			logger.info("[KnoxWebHDFSConnection:create] - httpfsUrl+spec = " + httpfsUrl+spec);
 			put = new HttpPut(new URL(httpfsUrl+spec).toURI());
 			client = getHttpClientKnox(true);
-			HttpResponse response = client.execute(put, getHttpContext());
+			HttpResponse response = client.execute(put, getHttpContext(this.hdpVersion));
 			
 			if (response.getStatusLine().getStatusCode() == 307)
 				redirectUrl = response.getFirstHeader("Location").getValue();
@@ -441,7 +459,7 @@ public class KnoxWebHDFSConnection {
 		            put2.setEntity(myEntity);
 					
 					//put2.setEntity(entity);
-					response2 = getHttpClientKnox().execute(put2,getHttpContext());
+					response2 = getHttpClientKnox().execute(put2,getHttpContext(this.hdpVersion));
 					resp = response2.getFirstHeader("Location").getValue();
 				}
 				finally {

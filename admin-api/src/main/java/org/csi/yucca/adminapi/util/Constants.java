@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.util;
@@ -77,5 +77,8 @@ public class Constants {
 	
 	public static String ADMINAPI_DECIMAL_SEPARATOR_COMMA = "COMMA";
 	public static String ADMINAPI_DECIMAL_SEPARATOR_DOT = "DOT";
+	
+	public static String HDP_VERSION_2 = "2.6";
+	public static String HDP_VERSION_3 = "3.4";
 
 }

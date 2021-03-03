@@ -6,6 +6,7 @@ Il prodotto **Yucca Data Service** è composto dalle seguenti componenti:
 - [admindb](https://github.com/yucca-sdp/yucca-dataservice/tree/master/admindb) (Script SQL per la gestione del database PostgreSQL)
 - [binary-api](https://github.com/yucca-sdp/yucca-dataservice/tree/master/binary-api) (API per la gestione dei file binari)
 - [data-api](https://github.com/yucca-sdp/yucca-dataservice/tree/master/data-api) (API per le interrogazioni sui dati)
+- [insert-api-kafka](https://github.com/yucca-sdp/yucca-dataservice/tree/master/insert-api-kafka) (API per l'inserimento dei dati tramite Apache Kafka)
 - [insertdata-api](https://github.com/yucca-sdp/yucca-dataservice/tree/master/insertdata-api) (API per l'inserimento dei dati in modalità real-time)
 - [metadata-api](https://github.com/yucca-sdp/yucca-dataservice/tree/master/metadata-api) (API per le ricerche indicizzate sui metadati)
 # Prerequisites
@@ -25,10 +26,11 @@ Nei file README.md delle singole componenti verranno elencate le variabili per l
 - Da riga di comando eseguire `mvn -Dmaven.test.skip=true -P dev clean package`
 - La compilazione genera le seguenti unità di installazione:
     - `admin-api/target/adminapi.war`
-	- `admindb/target/admindb-1.1.0-001.zip`
-	- `binary-api/target/binaryapi-1.0.0-001.war`
-	- `data-api/target/dataapi-2.0.0-001.war`
-	- `insertdata-api/target/insertdataapi-1.0.0-008.war`
+	- `admindb/target/admindb-*.zip`
+	- `binary-api/target/binaryapi-*.war`
+	- `data-api/target/dataapi-*.war`
+	- `insert-api-kafka/target/insert-api-kafka-*.war`
+	- `insertdata-api/target/insertdataapi-*.war`
 	- `metadata-api/target/metadataapi.war`
 ## Istruzioni per l'installazione
 - Creare uno schema standard sul database PostgreSQL.
@@ -39,7 +41,7 @@ Nei file README.md delle singole componenti verranno elencate le variabili per l
 	- `init_03_insert-data.sql`
 	- `init_04_yucca-ecosystem.sql`
 	- `init_05_updates.sql`
-- Effettuare il deploy dei file `adminapi.war`, `binaryapi-1.0.0-001.war`, `dataapi-2.0.0-001.war`, `insertdataapi-1.0.0-008.war` e `metadataapi.war` secondo procedura standard JBoss.
+- Effettuare il deploy dei file `adminapi.war`, `binaryapi-*.war`, `dataapi-*.war`, `insert-api-kafka-*.war`, `insertdataapi-*.war` e `metadataapi.war` secondo procedura standard JBoss.
 ## Informazioni aggiuntive
 - Lo script `drop_01_postgresql.sql` potrà essere utilizzato per la rimozione delle tabelle dallo schema.
 # Versioning
@@ -49,7 +51,7 @@ Gli autori della piattaforma Yucca sono:
 - [Alessandro Franceschetti](mailto:alessandro.franceschetti@csi.it)
 - [Claudio Parodi](mailto:claudio.parodi@csi.it)
 # Copyrights
-(C) Copyright 2019 Regione Piemonte
+(C) Copyright 2019 - 2021 Regione Piemonte
 # License
 Questo software è distribuito con licenza [EUPL-1.2-or-later](https://joinup.ec.europa.eu/collection/eupl/eupl-text-11-12)
 

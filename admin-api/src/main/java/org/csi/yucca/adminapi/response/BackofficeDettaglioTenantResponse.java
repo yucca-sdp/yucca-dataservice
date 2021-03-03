@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.adminapi.response;
@@ -42,7 +42,8 @@ public class BackofficeDettaglioTenantResponse {
 	private TenantStatusResponse tenantStatus;
 	private TenantTypeResponse tenantType;
 	private ShareTypeResponse shareType;
-
+	private Boolean flagmigrated;
+	private String hdpversion;
 	
 	public BackofficeDettaglioTenantResponse(DettaglioTenantBackoffice dettaglioTenant) {
 		super();
@@ -74,7 +75,9 @@ public class BackofficeDettaglioTenantResponse {
 		this.socialphoenixtablename = dettaglioTenant.getSocialphoenixtablename();
 		this.socialsolrcollectionname = dettaglioTenant.getSocialsolrcollectionname();
 		this.dataphoenixtablename = dettaglioTenant.getDataphoenixtablename();			
-		this.dataphoenixschemaname = dettaglioTenant.getDataphoenixschemaname();	
+		this.dataphoenixschemaname = dettaglioTenant.getDataphoenixschemaname();
+		this.flagmigrated = dettaglioTenant.getflagmigrated();
+		this.hdpversion = dettaglioTenant.getHdpVersion();
 	}
 	
 	public String getDataphoenixtablename() {
@@ -254,6 +257,22 @@ public class BackofficeDettaglioTenantResponse {
 	}
 	public void setSocialsolrcollectionname(String socialsolrcollectionname) {
 		this.socialsolrcollectionname = socialsolrcollectionname;
+	}
+
+	public Boolean getFlagmigrated() {
+		return flagmigrated;
+	}
+
+	public void setFlagmigrated(Boolean flagmigrated) {
+		this.flagmigrated = flagmigrated;
+	}
+
+	public String getHdpversion() {
+		return hdpversion;
+	}
+
+	public void setHdpversion(String hdpversion) {
+		this.hdpversion = hdpversion;
 	}
 	
 }

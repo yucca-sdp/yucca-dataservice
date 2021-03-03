@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: EUPL-1.2
  * 
- * (C) Copyright 2019 Regione Piemonte
+ * (C) Copyright 2019 - 2021 Regione Piemonte
  * 
  */
 package org.csi.yucca.dataservice.insertdataapi.adminapi;
@@ -39,7 +39,10 @@ public class SDPAdminApiConverter {
 			ret.setDatasetDomain(dettaglio.getDomain().getDomaincode());
 			ret.setDatasetSubdomain(dettaglio.getSubdomain().getSubdomaincode());
 			ret.setOrganizationCode(dettaglio.getOrganization().getOrganizationcode());
-			
+			if(dettaglio.getHdpVersion()!=null)
+				ret.setHdpVersion(dettaglio.getHdpVersion());
+			else if(dettaglio.getDataset()!=null)
+				ret.setHdpVersion(dettaglio.getDataset().getHdpVersion());
 			ret.setCollectionInfo(SDPAdminApiConverter.convertBackofficeDettaglioStreamDatasetResponseToCollectionConfDto(dettaglio));
 		}
 		
@@ -112,6 +115,7 @@ public class SDPAdminApiConverter {
 			collectionConfDto.setSolrCollectionName(dettaglio.getDataset().getSolrcollectionname());
 			collectionConfDto.setPhoenixSchemaName(dettaglio.getDataset().getPhoenixschemaname());
 			collectionConfDto.setPhoenixTableName(dettaglio.getDataset().getPhoenixtablename());
+		
 		}
 		
 		return collectionConfDto;
